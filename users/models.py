@@ -60,3 +60,4 @@ class User(AbstractUser):
     )
 
     superhost = models.BooleanField(default=False)
+    # dkdkdkdkdk
