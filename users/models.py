@@ -39,25 +39,15 @@ class User(AbstractUser):
 
     avatar = models.ImageField(null=True, blank=True)
     # blank ="true"는 form에서 빈공간을 빨간색표시하는데 저걸이용해 무시할수있다.
-    gender = models.CharField(
-        choices=GENDER_CHOICES, max_length=10, null=True, blank=True
-    )
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=10, blank=True)
     # 비어도 괜찮다!.. choices는 내장된 속성!! 3개의 값을 가지게 한다!
 
-    bio = models.TextField(default="", blank=True)
+    bio = models.TextField(blank=True)
     # 여기에 뭘넣던 admin패널에 다생기게 된다. database에 넣을수있음
     # default값 은 무조껀 있어야 migrations 만든후 migrate 넘길수있다
     # 값을 뭐라도 넣어줘야 한다. 안그러면 db에 빈자리 처리가 안된다!
     # 또는 null=true 라고 적어줘서 빈칸 써도 된다고 해준다!!
-    birthdate = models.DateField(null=True)
-
-    language = models.CharField(
-        choices=LANGUAGE_CHOICES, max_length=2, null=True, blank=True
-    )
-
-    currency = models.CharField(
-        choices=CURRENCY_CHOICES, max_length=3, null=True, blank=True
-    )
-
+    birthdate = models.DateField(blank=True, null=True)
+    language = models.CharField(choices=LANGUAGE_CHOICES, max_length=2, blank=True)
+    currency = models.CharField(choices=CURRENCY_CHOICES, max_length=3, blank=True)
     superhost = models.BooleanField(default=False)
-    # dkdkdkdkdk
