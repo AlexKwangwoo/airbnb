@@ -6,6 +6,7 @@ from django.db import models
 
 # Create your models here.
 # 장고 속의 models속의 class Model을 사용한다!!
+# core_models.TimeStampedModel은 사용안한다. DB에 저장해야하기떄문에
 class User(AbstractUser):
 
     """ Custom User Model """
@@ -43,6 +44,7 @@ class User(AbstractUser):
     # 비어도 괜찮다!.. choices는 내장된 속성!! 3개의 값을 가지게 한다!
 
     bio = models.TextField(blank=True)
+    bio2 = models.TextField(blank=True)
     # 여기에 뭘넣던 admin패널에 다생기게 된다. database에 넣을수있음
     # default값 은 무조껀 있어야 migrations 만든후 migrate 넘길수있다
     # 값을 뭐라도 넣어줘야 한다. 안그러면 db에 빈자리 처리가 안된다!
@@ -51,3 +53,7 @@ class User(AbstractUser):
     language = models.CharField(choices=LANGUAGE_CHOICES, max_length=2, blank=True)
     currency = models.CharField(choices=CURRENCY_CHOICES, max_length=3, blank=True)
     superhost = models.BooleanField(default=False)
+
+    # 모든 클래스는 밑의 매소드를 가지고 있다.
+    # def __str__(self):
+    #   return self.username
