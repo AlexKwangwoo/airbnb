@@ -23,7 +23,7 @@ class RoomType(AbstractItem):  # abstractItem이 들어가는 집합체라고 �
     """ RoomType model Definition"""
 
     class Meta:
-        verbose_name = "Room tiype"  # House room 인걸 룸을 대문자로 바꿔줌! 걍 이름변경
+        verbose_name = "Room type"  # House room 인걸 룸을 대문자로 바꿔줌! 걍 이름변경
         # ordering = ["name"] 순서 정렬!
 
 
@@ -48,7 +48,7 @@ class HouseRule(AbstractItem):
     """ HouseRule model Definition"""
 
     class Meta:
-        verbose_name = "House Room"  # House room 인걸 룸을 대문자로 바꿔줌!
+        verbose_name = "House Rule"  # House room 인걸 룸을 대문자로 바꿔줌!
 
 
 class Photo(core_models.TimeStampedModel):
@@ -103,3 +103,12 @@ class Room(core_models.TimeStampedModel):
     def __str__(self):
         # room object(1)이라고 나오는걸 사용자가 만든방 원래 이름으로 바꾸기
         return self.name
+
+    def total_rating(self):
+        all_reviews = self.reviews.all()
+        all_ratings = 0
+        for review in all_reviews:
+            all_ratings += review.rating_average()
+        return round(all_ratings / len(all_reviews), 2)
+        # 여기서 reviews는 reviews패키지안의
+        # models 파일속으 rooms 속의 related_name="reviews" <- 이것이다

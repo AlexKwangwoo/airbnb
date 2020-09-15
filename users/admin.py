@@ -40,3 +40,21 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+    list_filter = UserAdmin.list_filter + ("superhost",)
+
+    list_display = (
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "is_active",
+        "language",
+        "currency",
+        "superhost",
+        "is_staff",
+        "is_superuser",
+    )
+    # is_ ~~~ 친구들은 클래스 User가 상속받은
+    # AbstractUser 속에 있는 정해진 값이다!!!
+    # 그대로 써야함!

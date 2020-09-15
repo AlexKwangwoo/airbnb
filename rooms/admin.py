@@ -10,7 +10,12 @@ from . import models
 class ItemAdmin(admin.ModelAdmin):
     """ Item Admin Definition """
 
-    pass
+    list_display = ("name", "used_by")
+
+    def used_by(self, obj):
+        return obj.rooms.count()
+        # room에 의해 몇번 쓰였는지!
+        # 여기서 rooms는 클래스 Rooms의 related_name 을 가리킨다!!
 
 
 # 장고의 contrib에서 admin 파일에 Room이라는 클래스를 가져오는것임!
@@ -34,11 +39,14 @@ class RoomAdmin(admin.ModelAdmin):
         ),
         (
             "Last Details",
-            {"fields": ("host",)},  # 한개인 경우 , 가 있어야 튜플이 된다!
+            {"fields": ("host", "room_type")},  # 한개인 경우 , 가 있어야 튜플이 된다!
         ),
     )
 
     ordering = ("name", "price", "bedrooms")  # 리스트들을 어떻게 정렬할것인지!!
+
+    # list_display가 처음 룸눌렀을때 보이는것.. 개인적인 방
+    # 자체를 누르면 fieldset이 실행된다!
 
     list_display = (
         "name",
@@ -56,6 +64,7 @@ class RoomAdmin(admin.ModelAdmin):
         # aminities 넣고싶은데.. many to many는 안될경우가 있다!!
         # 그럴땐 함수를 만들자!
         "count_photos",
+        "total_rating",
     )
 
     ###############################################################################
@@ -79,6 +88,9 @@ class RoomAdmin(admin.ModelAdmin):
 
     def count_photos(self, obj):
         return obj.photos.count()
+        # obj는 위의 RoomAdmin 클래스가리킴->상속 room받고있음
+        # photo를 한 related name을 찾는다!!
+        # Photo클래스의 related_name ="photo" 이다!
 
     #
     ###############################################################################
