@@ -56,7 +56,8 @@ class Photo(core_models.TimeStampedModel):
 
     caption = models.CharField(max_length=80)
     file = models.ImageField()
-    room = models.ForeignKey("Room", on_delete=models.CASCADE)
+    room = models.ForeignKey("Room", related_name="photos", on_delete=models.CASCADE)
+    # 룸한테 내목숨을 맡김... 룸사라지면 사진도 사라짐.
 
     def __str__(self):
         return self.caption
@@ -81,19 +82,23 @@ class Room(core_models.TimeStampedModel):
     instant_book = models.BooleanField(default=False)
 
     host = models.ForeignKey(
-        "users.User", on_delete=models.CASCADE
+        "users.User", related_name="rooms", on_delete=models.CASCADE
     )  # host는 user랑 연결되어있어서
     # foreignKey를 사용해서 연결해줘야한다! room은 하나의 유저만 가질수있다
     # ondelete는 one to many만 가질수있따 foreign 키 있을때
+    # related_name은 user가 찾을때 사용한다 즉 room_set.all() 입력대신
+    # rooms.all() 을 입력할수있다
 
-    room_type = models.ForeignKey("RoomType", on_delete=models.SET_NULL, null=True)
+    room_type = models.ForeignKey(
+        "RoomType", related_name="rooms", on_delete=models.SET_NULL, null=True
+    )
     # 룸은 다양한 타입의 방을 가질수있다 many to many-> 강의가 바뀜 그냥 예시든거임
     # 룸을 하나의 객실타입만 가지고 싶게 했기때문에 foreignKey로 전환!
     # setnull 통해 orphan (고아)로 엄마 아빠랑 관계 없게 끊어버림
 
-    amenities = models.ManyToManyField("Amenity", blank=True)
-    facilities = models.ManyToManyField("Facility", blank=True)
-    house_rules = models.ManyToManyField("HouseRule", blank=True)
+    amenities = models.ManyToManyField("Amenity", related_name="rooms", blank=True)
+    facilities = models.ManyToManyField("Facility", related_name="rooms", blank=True)
+    house_rules = models.ManyToManyField("HouseRule", related_name="rooms", blank=True)
 
     def __str__(self):
         # room object(1)이라고 나오는걸 사용자가 만든방 원래 이름으로 바꾸기
