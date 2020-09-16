@@ -55,7 +55,9 @@ class Photo(core_models.TimeStampedModel):
     """ Photo model Definition"""
 
     caption = models.CharField(max_length=80)
-    file = models.ImageField()
+    file = models.ImageField(upload_to="room_photos")
+    # 이미지 필드는 이미지를 위한거고, 파일 필드는 파일을 위한것이다
+    # 어떤 폴더안에 저장할것인지!
     room = models.ForeignKey("Room", related_name="photos", on_delete=models.CASCADE)
     # 룸한테 내목숨을 맡김... 룸사라지면 사진도 사라짐.
 
@@ -103,6 +105,15 @@ class Room(core_models.TimeStampedModel):
     def __str__(self):
         # room object(1)이라고 나오는걸 사용자가 만든방 원래 이름으로 바꾸기
         return self.name
+
+    # busan이라 쓰면 Busan이라고 저장하고 싶다!!
+    # model 저장 컨트롤을 할수있다
+    # 이건 어드민에서 모델을 건드릴 때만이 아니라, 어딘가에서 이 모델을
+    # 건드려도 똑같이 일어난다!!
+    def save(self, *args, **kwargs):
+        # print(self.city)  # 저장되는 값을 불러올수있다!!
+        self.city = str.capitalize(self.city)
+        super().save(*args, **kwargs)  # Call the real save() method
 
     def total_rating(self):
         all_reviews = self.reviews.all()

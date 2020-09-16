@@ -1,5 +1,6 @@
 from django.db import models
 from core import models as core_models
+from django.utils import timezone
 
 # Create your models here.
 class Reservation(core_models.TimeStampedModel):
@@ -32,5 +33,17 @@ class Reservation(core_models.TimeStampedModel):
     def __str__(self):
         return f"{self.room} - {self.check_in}"
 
+    # 예약취소 확정같은 예약 상태도 만들수있음, 나중에 추가
 
-# 예약취소 확정같은 예약 상태도 만들수있음, 나중에 추가
+    def in_progress(self):
+        now = timezone.now().date()
+        return now > self.check_in and now < self.check_out
+        # checkin과 checkout 을 보고 상태 를 결정한다
+
+    in_progress.boolean = True  # X,O 로 상태를 표시해준다!!
+
+    def is_finished(self):
+        now = timezone.now().date()
+        return now > self.check_out
+
+    is_finished.boolean = True

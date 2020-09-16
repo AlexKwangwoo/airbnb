@@ -38,7 +38,7 @@ class User(AbstractUser):
         (CURRENCY_KRW, "KRW"),
     )
 
-    avatar = models.ImageField(null=True, blank=True)
+    avatar = models.ImageField(upload_to="avatars", null=True, blank=True)
     # blank ="true"는 form에서 빈공간을 빨간색표시하는데 저걸이용해 무시할수있다.
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, blank=True)
     # 비어도 괜찮다!.. choices는 내장된 속성!! 3개의 값을 가지게 한다!

@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.utils.html import mark_safe  # 장고 security 해제
 from . import models
+
 
 # Register your models here.
 
@@ -18,15 +20,22 @@ class ItemAdmin(admin.ModelAdmin):
         # 여기서 rooms는 클래스 Rooms의 related_name 을 가리킨다!!
 
 
+# admin 속에 다른 admin넣는 방법!!
+class PhotoInlines(admin.TabularInline):
+    model = models.Photo  # 어떤 클래스의 모델을 넣겠습니까? photo!
+
+
 # 장고의 contrib에서 admin 파일에 Room이라는 클래스를 가져오는것임!
 @admin.register(models.Room)
 class RoomAdmin(admin.ModelAdmin):
     """ Room Admin Definition """
 
+    inlines = (PhotoInlines,)  # 위에 photoInline을 추가해주면 된다!
+
     fieldsets = (
         (
             "Basic Info",
-            {"fields": ("name", "description", "country", "address", "price")},
+            {"fields": ("name", "description", "country", "city", "address", "price")},
         ),
         ("Times", {"fields": ("check_in", "check_out", "instant_book")}),
         ("Spaces", {"fields": ("guests", "beds", "bedrooms", "baths")}),
@@ -80,6 +89,7 @@ class RoomAdmin(admin.ModelAdmin):
     # 밑의 포토는 자신클래스의 속성(사진이 없다) 그래서 RoomAdmin(Room)가 뿌려놓은 포린키
     # 를 가지고있는 클래스 photo에서 정보를 받기위해 room_set을 써야했을것이다 하지만
     # related_name ="photo" 를 이용해 정보를 가져올수있는것이다.
+
     def count_amenities(self, obj):
         return obj.amenities.count()
 
@@ -95,6 +105,11 @@ class RoomAdmin(admin.ModelAdmin):
     #
     ###############################################################################
 
+    # 이부분은 admin의 저장을 컨트롤할수있다!
+    def save_model(self, request, obj, form, change):
+        print(obj, change, form)
+        super().save_model(request, obj, form, change)  # Call the real save() method
+
     # filter list도 __ 이용하여 host 의 속성 user의 superhostm gender이용가능!!
     list_filter = (
         "instant_book",
@@ -107,6 +122,9 @@ class RoomAdmin(admin.ModelAdmin):
         "house_rules",
         "country",
     )
+
+    raw_id_fields = ("host",)
+    # userAdmin을 사용해서  유저를 검색할수있게 해준다!!!!!!
 
     filter_horizontal = (
         "amenities",
@@ -124,4 +142,12 @@ class RoomAdmin(admin.ModelAdmin):
 class PhotoAdmin(admin.ModelAdmin):
     """ Photo Admin Definition"""
 
-    pass
+    list_display = ("__str__", "get_thumbnail")
+
+    # 이것은 프론트 앤드에서 안쓰기에 모델에 넣을필요없다
+    def get_thumbnail(self, obj):
+        return mark_safe(f'<img width = 50px, src="{obj.file.url}" />')
+
+    # mark_safe 안써주면.. 장고의 security 가 작동해 경로를 변경한다!
+    # import 후 사용해주자!
+    get_thumbnail.short_description = "Thumbnail"

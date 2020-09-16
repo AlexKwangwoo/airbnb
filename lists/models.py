@@ -20,3 +20,8 @@ class List(core_models.TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    def count_rooms(self):
+        return self.rooms.count()  # 바로 변수 rooms를 나타낸다
+
+    count_rooms.short_description = "Number of Rooms"

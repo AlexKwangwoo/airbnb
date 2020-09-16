@@ -24,6 +24,7 @@ SECRET_KEY = "nn7nlo$jk-xu7@9i+7dwix!jt-%((9ib(*j9mfs$4(1wdh@qt3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# 이페이지를 통해 에러가나면 404같은 노란페이지 오류를 볼수있다
 
 ALLOWED_HOSTS = []
 
@@ -133,3 +134,10 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 AUTH_USER_MODEL = "users.User"
+MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
+# 위에 base_dir은 절대경로로 airbnb를 가리킨다 거기에
+# os.path.join을 써서 +/uploads를 추가해주는것이다!
+# 사진 파일을 찾기 위해!
+
+MEDIA_URL = "/media/"
+# 처음에 / 를 추가하면 루트 경로로 시작한다
