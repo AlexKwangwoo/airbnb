@@ -118,8 +118,11 @@ class Room(core_models.TimeStampedModel):
     def total_rating(self):
         all_reviews = self.reviews.all()
         all_ratings = 0
-        for review in all_reviews:
-            all_ratings += review.rating_average()
-        return round(all_ratings / len(all_reviews), 2)
-        # 여기서 reviews는 reviews패키지안의
-        # models 파일속으 rooms 속의 related_name="reviews" <- 이것이다
+        if len(all_reviews) > 0:
+            for review in all_reviews:
+                all_ratings += review.rating_average()
+            return round(all_ratings / len(all_reviews), 2)
+            # 여기서 reviews는 reviews패키지안의
+            # models 파일속으 rooms 속의 related_name="reviews" <- 이것이다
+        return 0
+        # fake 방을만들려는데 all rating =0 가 떠서 나눠줄수가 없다함!

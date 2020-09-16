@@ -35,7 +35,17 @@ class RoomAdmin(admin.ModelAdmin):
     fieldsets = (
         (
             "Basic Info",
-            {"fields": ("name", "description", "country", "city", "address", "price")},
+            {
+                "fields": (
+                    "name",
+                    "description",
+                    "country",
+                    "city",
+                    "address",
+                    "price",
+                    "room_type",
+                )
+            },
         ),
         ("Times", {"fields": ("check_in", "check_out", "instant_book")}),
         ("Spaces", {"fields": ("guests", "beds", "bedrooms", "baths")}),
@@ -48,7 +58,7 @@ class RoomAdmin(admin.ModelAdmin):
         ),
         (
             "Last Details",
-            {"fields": ("host", "room_type")},  # 한개인 경우 , 가 있어야 튜플이 된다!
+            {"fields": ("host",)},  # 한개인 경우 , 가 있어야 튜플이 된다!
         ),
     )
 
@@ -102,13 +112,15 @@ class RoomAdmin(admin.ModelAdmin):
         # photo를 한 related name을 찾는다!!
         # Photo클래스의 related_name ="photo" 이다!
 
+    count_photos.short_description = "Photo Count"
+
     #
     ###############################################################################
 
     # 이부분은 admin의 저장을 컨트롤할수있다!
-    def save_model(self, request, obj, form, change):
-        print(obj, change, form)
-        super().save_model(request, obj, form, change)  # Call the real save() method
+    # def save_model(self, request, obj, form, change):
+    #     print(obj, change, form)
+    #     super().save_model(request, obj, form, change)  # Call the real save() method
 
     # filter list도 __ 이용하여 host 의 속성 user의 superhostm gender이용가능!!
     list_filter = (
