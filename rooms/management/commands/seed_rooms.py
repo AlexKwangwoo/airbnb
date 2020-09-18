@@ -45,16 +45,32 @@ class Command(BaseCommand):
         created_clean = flatten(list(created_photos.values()))
         # flatten은 [[14]] 와같은 리스트속 리스트(이상한모양에서)
         # 요약된 [14]만 가져와준다!
+        amenities = room_models.Amenity.objects.all()
+        facilities = room_models.Facility.objects.all()
+        rules = room_models.HouseRule.objects.all()
+        # 다대 다를 넣기위한방법!!
         for pk in created_clean:  # 생성된 모든 룸(created_clean 리스트의 형태)
             room = room_models.Room.objects.get(pk=pk)
             # 프라이머리 키로 룸을 찾고 (들어갈 룸!!)
             # 왼쪽 pk는 방의 id가 될것이고, 오른쪽 pk는 created_clean의 인자들이 될것이다!
-            for i in range(3, random.randint(10, 17)):  # min 3 ~ max (10~17)의 사진생성
+            for i in range(3, random.randint(10, 30)):  # min 3 ~ max (10~30)의 사진생성
                 room_models.Photo.objects.create(
                     caption=seeder.faker.sentence(),
-                    room=room,  # 바로 위의 room이 될것이다!
+                    room=room,  # 왼쪽룸은 photo의룸 오른쪽은 바로 위의 room이 될것이다!
                     file=f"room_photos/{random.randint(1,31)}.webp",  # 문제생기면 9.4 다시보기
                     # file="room_photos/31.jpg", 문제생기면 여기를 고치자!! 사진도 확장자 jpg로 바꿔야함!
                     # 다운로드하고 파일을 여는경우가 생긴다.. jpg는 괜찮음!
                 )
-        self.stdout.write(self.style.SUCCESS(f"{number} users created!!"))
+            for a in amenities:
+                magic_number = random.randint(0, 15)
+                if magic_number % 2 == 0:
+                    room.amenities.add(a)
+            for f in facilities:
+                magic_number = random.randint(0, 15)
+                if magic_number % 2 == 0:
+                    room.facilities.add(f)
+            for r in rules:
+                magic_number = random.randint(0, 15)
+                if magic_number % 2 == 0:
+                    room.house_rules.add(r)
+        self.stdout.write(self.style.SUCCESS(f"{number} rooms created!!"))

@@ -37,7 +37,7 @@ class Reservation(core_models.TimeStampedModel):
 
     def in_progress(self):
         now = timezone.now().date()
-        return now > self.check_in and now < self.check_out
+        return now >= self.check_in and now <= self.check_out
         # checkin과 checkout 을 보고 상태 를 결정한다
 
     in_progress.boolean = True  # X,O 로 상태를 표시해준다!!

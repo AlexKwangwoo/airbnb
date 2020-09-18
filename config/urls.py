@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -22,7 +22,11 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("", include("core.urls", namespace="core")),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),  # 처음의 path로 가서 장고가 확인할것이다!
 ]
 
 # urlpatterns 은 지정된 이름이다

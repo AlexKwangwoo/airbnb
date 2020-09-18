@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+
+<!-- 모두 같은 폴더잇다고 생각하고 경로 설정해야한다
+<../base 이렇게 (절대경로) 해주면 안된다!!
+block은 창문이다.. 자식이 부모 템플릿에게 content를 집어 넣을수 있게 하는!!  -->
+
+
+{% block page_name %}
+Home
+{% endblock page_name %}
+
+{% block content %}
+
+<!--page.object_list 가 아니라 object_list로 바로 갈수있다-->
+{% for room in page.object_list %}
+<h1>{{room.name}} / ${{room.price}}</h1>
+{% endfor %}
+
+
+<!-- page=\{\{page-1\}\} 이 작동이 안한다.. 그래서 |add:
+을 써서 페이지를 더하고 빼줄것이다. 장고 templates tags기능임! 
+paginator에 num_pages 속성이 있음! 전체 페이지!!!-->
+<h5>
+  {% if page.has_previous %}
+  <!-- <a href="?page={{page.number|add:-1}}">Previous</a>
+  그리고  previous_page_number() 함수가 되어야하는데 장고 탬플릿은 () 안붙인다!-->
+  <a href="?page={{page.previous_page_number}}">Previous</a>
+  {% endif %}
+  Page {{page.number}} of {{page.paginator.num_pages}}
+
+  {% if page.has_next%}
+  <!-- <a href="?page={{page.number|add:1}}">Next</a> if + has가 없었다면
+  next_opage_number 에서 오류를 보낼것이다!-->
+  <a href="?page={{page.next_page_number}}">Next</a>
+  {% endif %}
+
+</h5>
+
+
+<!-- in다음에 range(1,page_count) 할려했으나 장고템플리이 
+다 적용을 못해서.. view에서 변수값을 입력해 page_range를 불러왔다!
+{% for page in page_range %}
+<a href="?page={{page}}">{{page}}</a>
+{% endfor %} // 다른걸 해보자!!
+-->
+
+
+{% endblock %}
