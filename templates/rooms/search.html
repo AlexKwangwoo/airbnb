@@ -12,6 +12,15 @@ Search
 <h2>Search!</h2>
 
 <form method="get" action="{% url "rooms:search" %}">
+  {{form.as_p}}
+  <!--as_p 안붙여 주면 테이블 형식이라 한줄띄우기 안됨!-->
+
+  <button>Search</button>
+
+</form>
+
+{% comment %}
+<form method="get" action="{% url "rooms:search" %}">
   <div>
     <label for="city">City</label>
     <input value="{{city}}" id="city" name="city" placeholder="Search by city"></input>
@@ -115,8 +124,7 @@ Search
     </ul>
   </div>
   <button>Search</button>
-
-</form>
+</form> {% endcomment %}
 
 <h3>Results</h3>
 {% for room in rooms  %}
