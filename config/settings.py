@@ -27,6 +27,8 @@ DEBUG = True
 # 이페이지를 통해 에러가나면 404같은 노란페이지 오류를 볼수있다
 
 ALLOWED_HOSTS = []
+# DEBUG = False와 allowed_host ="*" 이것은 404페이지를 직접 만들어
+# 보여주고 싶을때 설정했다! 월래는 빈칸에 true였음!
 
 
 # Application definition

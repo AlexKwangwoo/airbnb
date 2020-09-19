@@ -6,9 +6,9 @@
 block은 창문이다.. 자식이 부모 템플릿에게 content를 집어 넣을수 있게 하는!!  -->
 
 
-{% block page_name %}
+{% block page_title %}
 Home
-{% endblock page_name %}
+{% endblock page_title %}
 
 {% block content %}
 
@@ -19,7 +19,14 @@ object list를 반환 바로해줌! 이름 바꾸고싶었음 !!
 view에서 context_object_name = "rooms" 를통해 
 \{% for room in object_list %\}를 바꿈-->
 {% for room in rooms %}
-<h1>{{room.name}} / ${{room.price}}</h1>
+<h3>
+  <a href="{% url "rooms:detail" room.pk %}">
+    <!-- rooms = namespace / detail = name 이다!! 변수설정에서 가져온것!
+        config url과 rooms의 url에서 가져왔다. 
+        detail은 argument <int:pk>를 기다리고 있다!! 입력 필수!!-->
+    {{room.name}} / ${{room.price}}
+  </a>
+</h3>
 {% endfor %}
 
 
@@ -28,8 +35,8 @@ view에서 context_object_name = "rooms" 를통해
 paginator에 num_pages 속성이 있음! 전체 페이지!!!-->
 <h5>
   {% if page_obj.has_previous %}
-  <!-- <a href="?page={{page.number|add:-1}}">Previous</a>
-  그리고  previous_page_number() 함수가 되어야하는데 장고 탬플릿은 () 안붙인다!-->
+  <!-- <a href=" ?page={{page.number|add:-1}}">Previous</a>
+  그리고 previous_page_number() 함수가 되어야하는데 장고 탬플릿은 () 안붙인다!-->
   <a href="?page={{page_obj.previous_page_number}}">Previous</a>
   {% endif %}
   <!--Page {{page.number}} of {{page.paginator.num_pages}} 장고를 크게이용!! -->

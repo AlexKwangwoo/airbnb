@@ -23,6 +23,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("", include("core.urls", namespace="core")),
+    path("rooms/", include("rooms.urls", namespace="rooms")),
+    # http://localhost:8000/rooms/34 저기서 path("rooms/" ==> 8000/rooms/ 가 된다
     path(
         "admin/",
         admin.site.urls,

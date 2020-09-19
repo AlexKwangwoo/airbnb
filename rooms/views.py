@@ -1,9 +1,14 @@
-from django.utils import timezone
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
+from django.shortcuts import render
+from django_countries import countries
 from . import models
 
+# from django.http import Http404
+# from django.shortcuts import render
 # from math import ceil
 # from django.shortcuts import render, redirect
+# from django.urls import reverse
+# from django.utils import timezone
 # from django.core.paginator import Paginator, EmptyPage
 # from datetime import datetime
 # from django.http import HttpResponse
@@ -22,11 +27,150 @@ class HomeView(ListView):
     context_object_name = "rooms"
 
     # context 안의 내용을 좀더 수정한다!!!! 시간 추가!
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        now = timezone.now()
-        context["now"] = now
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     now = timezone.now()
+    #     context["now"] = now
+    #     return context
+
+
+# view를 더 쉽게 해보자!! 장고가 많이 도와주는 세번째 방식으로!
+class RoomDetail(DetailView):
+    """ RoomDetail Definition """
+
+    model = models.Room  # 장고가 models.Room의 Room을 소문자로 바꿔
+    # room detail.html 의 room 변수로 사용하게 만들어준다!!
+    # view한테 우리가 무슨 model을 원하는지 알려줘야한다!
+
+
+def search(request):
+    city = request.GET.get("city", "Anywhere")
+    city = str.capitalize(city)
+    country = request.GET.get("country", "KR")
+    room_type = int(request.GET.get("room_type", 0))
+    price = int(request.GET.get("price", 0))
+    guests = int(request.GET.get("guests", 0))
+    bedrooms = int(request.GET.get("bedrooms", 0))
+    beds = int(request.GET.get("beds", 0))
+    baths = int(request.GET.get("baths", 0))
+    instant = bool(request.GET.get("instant", False))
+    superhost = bool(request.GET.get("superhost", False))  # 필터를 위해 bool값으로 바꿔준다!
+    s_amenities = request.GET.getlist("amenities")
+    s_facilities = request.GET.getlist("facilities")
+    s_house_rules = request.GET.getlist("house_rules")
+    # getlist를 통해 amenity와 facility의 checkbox에서 선택된
+    # 친구들의 리스트를 가져올수 있게 된다!!
+
+    form = {
+        "city": city,
+        "s_room_type": room_type,
+        "s_country": country,
+        "price": price,
+        "guests": guests,
+        "bedrooms": bedrooms,
+        "beds": beds,
+        "baths": baths,
+        "s_amenities": s_amenities,
+        "s_facilities": s_facilities,
+        "s_house_rules": s_house_rules,
+        "instant": instant,
+        "superhost": superhost,
+    }  # request로 오는 정보는 다 form으로 갈것이다! 즉 get으로 받는정보는 여기서!! 표시해줌!
+
+    room_types = models.RoomType.objects.all()
+    amenities = models.Amenity.objects.all()
+    facilities = models.Facility.objects.all()
+    house_rules = models.HouseRule.objects.all()
+
+    choices = {
+        "countries": countries,
+        "room_types": room_types,
+        "amenities": amenities,
+        "facilities": facilities,
+        "house_rules": house_rules,
+    }
+
+    filter_args = {}
+    # filter_args에 들어올때마다 if-> if-> if-> 탄다고 보면됨
+    # 점점 걸러준다!
+
+    if city != "Anywhere":
+        filter_args["city__startswith"] = city
+
+    filter_args["country"] = country
+
+    if room_type != 0:
+        filter_args["room_type__pk__exact"] = room_type
+        # room_type.pk == room_type 이라고 보면된다!!
+
+    if price != 0:
+        filter_args["price__lte"] = price
+        # lte => less than equals// price보다 낮은 가격을 찾아준다!
+
+    if guests != 0:
+        filter_args["guests__gte"] = guests
+
+    if bedrooms != 0:
+        filter_args["bedrooms__gte"] = bedrooms
+
+    if beds != 0:
+        filter_args["beds__gte"] = beds
+
+    if baths != 0:
+        filter_args["baths__gte"] = baths
+
+    # print(bool(instant), bool(superhost))
+
+    if instant is True:
+        filter_args["instant_book"] = True
+        # instant_book 이 True면 포함시켜주세요!
+
+    if superhost is True:
+        filter_args["host__superhost"] = True
+
+    if len(s_amenities) > 0:
+        # array 때문에 걸러줘야한다!!
+        # s_amenities에서 [1,2,3]을 가지고있다면 1,2,3을 필터에 하나하나 추가하는것!!
+        for s_amenity in s_amenities:
+            filter_args["amenities__pk"] = int(s_amenity)
+
+    if len(s_facilities) > 0:  # array 때문에 걸러줘야한다!!
+        for s_facility in s_facilities:
+            filter_args["facilities__pk"] = int(s_facility)
+
+    if len(s_house_rules) > 0:  # array 때문에 걸러줘야한다!!
+        for s_house_rule in s_house_rules:
+            filter_args["house_rules__pk"] = int(s_house_rule)
+
+    rooms = models.Room.objects.filter(**filter_args)
+    # city + __startswith 에 의해 입력된 값으로 시작된 단어를 찾아준다! city에서!
+    # 그래서 seo 입력경우 시티가 seoul인 경우 rooms에 들어가게된다!!
+    # country 는 선택값이 정해져있기때문에 조건 없고 시작 글자도 필요없다!
+    return render(
+        request,
+        "rooms/search.html",
+        {**form, **choices, "rooms": rooms},
+        # {form, choices}이것은 뭉쳐있기때문에 **를 써서 풀어준다(dictionary)
+    )
+
+
+# url에서 pk를 가지고 올것이다!!
+# 이제 데이터베이스에서 room 정보를 가지고 온다!
+# render request받고 rooms에 있는 탬플릿 detail을 실행시킨다!
+# def room_detail(request, pk):
+#     try:
+#         room = models.Room.objects.get(pk=pk)
+#         return render(request, "rooms/detail.html", {"room": room})
+#     except models.Room.DoesNotExist:
+#         raise Http404()
+# 장고는 탬플릿폴더!!! 바로!!안의404.html을 자동으로 찾아간다!!
+# 템플릿 속 다른 파일안에 있으면 안된다!
+# 에러 뜨게 하고싶으면 return이 아니라 raise이다!!
+# return redirect(reverse("core:home"))
+# reverse를 통해 주소 설정이 쉬움!!
+
+# render의 마지막은 탬플릿에서 사용할 변수가 될것이다! ex)room.name
+# "room":room에서 두번째 room은 위에 models.Room.~~ 이다!
 
 
 # 밑에꺼는 get_page사용이고 지금은 에러발생시키는 page 를 보자!

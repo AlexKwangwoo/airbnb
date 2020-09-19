@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django_countries.fields import CountryField
 from core import models as core_models
 
@@ -114,6 +115,13 @@ class Room(core_models.TimeStampedModel):
         # print(self.city)  # 저장되는 값을 불러올수있다!!
         self.city = str.capitalize(self.city)
         super().save(*args, **kwargs)  # Call the real save() method
+
+    def get_absolute_url(self):
+        return reverse("rooms:detail", kwargs={"pk": self.pk})
+        # namespace => rooms/ name : detail.. config와 core의 url에 있음!
+        # url name을 받아서 실제 url을 리턴해준다!
+        # detail은 argument가 필요하다!!
+        # 이것을 통해 백앤드에서 프론트 앤드로 보내준다!
 
     def total_rating(self):
         all_reviews = self.reviews.all()
