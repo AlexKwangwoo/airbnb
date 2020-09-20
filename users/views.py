@@ -1,3 +1,5 @@
+import os
+import requests
 from django.views import View
 from django.views.generic import FormView
 from django.urls import reverse_lazy
@@ -75,8 +77,113 @@ def complete_verification(request, key):
     return redirect(reverse("core:home"))
 
 
+# 유저가 깃허브 눌렀을때 /user/login/github링크로갈껀데 redirect 쪽으로 가진다!
 def github_login(request):
+    client_id = os.environ.get("GH_ID")
+    redirect_uri = "http://localhost:8000/users/login/github/callback"  # 깃허브의 Authorization callback URL
+    return redirect(
+        f"https://github.com/login/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope=read:user"
+    )
+
+
+# 유저가 accept를 누르면 여기로 온다!! 또한 url에서 code를 가져온다
+# http://localhost:8000/users/login/github/callback?code=80bd88bcaafc31e583ee
+# 저기서 code=~~~~ 되어있는 부분! 이코드로 우리는 다시 다른 request를 보낼것이다!
+# token_access 한다 with client_id, client_secret, code를 이용해서!
+# 그다음 깃허브는 우리에게 json을 줄것이고!!(result값으로..)
+# 그다음 애러가 있는지 체크 할것이다!
+# 에러가 없다면 (else)에서 access_token을 가져올것이다!
+# 그 access_token을 가지고 깃허브 api를 request할수있게 된다!
+# 헤더에서 토큰을 보내고 그다음 우리는 profile json을 받게된다!
+# 그다음 profile json안에 username이 있는지 체크할것이다!
+# profile_json 속에 이름이 없다면 리다이렉해준다!
+
+
+class GithubException(Exception):
+    # 이름을 우리껄로 만들었고.. redirect대신 exception을 사용해준다!
     pass
+
+
+def github_callback(request):
+    try:
+        client_id = os.environ.get("GH_ID")
+        client_secret = os.environ.get("GH_SECRET")
+        code = request.GET.get("code", None)
+        # code를 access token으로 바꿔야한다! 깃허브 api를 access 할수있게 해준다!
+        # 우리가 해야하는건 post request를 보내야 한다!
+        if code is not None:
+            token_request = requests.post(
+                f"https://github.com/login/oauth/access_token?client_id={client_id}&client_secret={client_secret}&code={code}",
+                headers={"Accept": "application/json"},
+            )  # 값을 제이슨으로 넘겨준다고 깃에 쓰어있음!!
+            token_json = token_request.json()
+            error = token_json.get("error", None)
+            if error is not None:
+                # return redirect(reverse("users:login"))
+                raise GithubException()
+            else:
+                access_token = token_json.get("access_token")
+                # 깃허브 API에 request를 보내는걸 만들거임!
+                profile_request = requests.get(
+                    # 그 access_token을 가지고 깃허브 api를 request할수있게 된다!
+                    "https://api.github.com/user/mails",  # mails를 써서 프라이빗 메일도 찾아줌!
+                    # 헤더에서 토큰을 보내고
+                    headers={
+                        "Authorization": f"token {access_token}",
+                        "Accept": "application/json",
+                    },
+                )
+                # 내가만든설명서에 있음 3단계에 적혀있다!! 시키는데로 설명서보고 하는중..
+                profile_json = profile_request.json()
+                username = profile_json.get("login", None)
+                if username is not None:
+                    # user가 있다면 계속 진행
+                    # 이것들을 깃허브에서 가져온다!!
+                    name = profile_json.get("name")
+                    email = profile_json.get("email")
+                    bio = profile_json.get("bio")
+
+                    # 그 이메일을 가진 유저가 있다면 그말은 이미 로그인 되어 있다는 뜻이다.
+                    # 그 이메일을 가진 user가 있다는 뜻이다
+                    try:
+                        user = models.User.objects.get(email=email)
+                        # 만약 우리가 유저를 찾았다면 로그인 메소드를 확인할것이다
+                        if user.login_method != models.User.LOGIN_GITHUB:
+                            # trying to log in 여기 온다는건 밑에 모든 조건을 다 거쳤다는것이다!
+                            # 만약 로그인메쏘드가 깃허브면 유저를 로그인 시킬것이다!
+                            # login(request, user) 밑에서 한번에 해줌
+                            raise GithubException()
+
+                    except models.User.DoesNotExist:
+                        # 만약 우리가 한명의 유저도 찾을 수 없다면.. 그뜻은
+                        # 우리가 유저를 만들어야한다는 의미 이다!
+                        user = models.User.objects.create(
+                            email=email,
+                            first_name=name,
+                            username=email,
+                            bio=bio,
+                            login_method=models.User.LOGIN_GITHUB,
+                            # 이유저는 깃허브로 부터 왔다!
+                        )
+                        user.set_unusable_password()
+                        # 어떤 패스워드가 됐던 먹히지 않고
+                        # 로그인 시킬것이다!
+                        user.save()
+                    login(request, user)
+                    return redirect(reverse("core:home"))
+
+                else:
+                    # return redirect(
+                    #     reverse("users:login")
+                    # )  # profile_json 속에 이름이 없다면 리다이렉해준다!
+                    raise GithubException()
+        else:
+            # return redirect(reverse("core:home"))
+            # 코드가 none이면
+            raise GithubException()
+    except GithubException:  # 에러나면 걍 로그인으로 보냄
+        # send error message
+        return redirect(reverse("users:login"))
 
 
 # class LoginView(View):

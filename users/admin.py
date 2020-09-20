@@ -36,6 +36,7 @@ class CustomUserAdmin(UserAdmin):
                     "language",
                     "currency",
                     "superhost",  # 여기서 만들어지는 모든것들의 이름 첫글자는 자동으로 대문자가 된다
+                    "login_method",
                 )
             },
         ),
@@ -56,6 +57,7 @@ class CustomUserAdmin(UserAdmin):
         "is_superuser",
         "email_verified",
         "email_secret",
+        "login_method",
     )
     # is_ ~~~ 친구들은 클래스 User가 상속받은
     # AbstractUser 속에 있는 정해진 값이다!!!

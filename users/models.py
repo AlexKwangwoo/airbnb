@@ -43,6 +43,15 @@ class User(AbstractUser):
         (CURRENCY_KRW, "KRW"),
     )
 
+    LOGIN_EMAIL = "email"
+    LOGIN_GITHUB = "github"
+    LOGIN_KAKAO = "kakao"
+    LOGIN_CHOICES = (
+        (LOGIN_EMAIL, "Email"),
+        (LOGIN_GITHUB, "Github"),
+        (LOGIN_KAKAO, "Kakao"),
+    )
+
     avatar = models.ImageField(upload_to="avatars", null=True, blank=True)
     # blank ="true"는 form에서 빈공간을 빨간색표시하는데 저걸이용해 무시할수있다.
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, blank=True)
@@ -65,6 +74,10 @@ class User(AbstractUser):
     email_verified = models.BooleanField(default=False)
     email_secret = models.CharField(max_length=20, default="", blank=True)
     # 이메일 시크릿은 유저가 아이디와 비번 만들면 시크릿 숫자를 추가할것이다!
+
+    login_method = models.CharField(
+        max_length=50, choices=LOGIN_CHOICES, default=LOGIN_EMAIL
+    )
 
     def verify_email(self):
         if self.email_verified is False:
