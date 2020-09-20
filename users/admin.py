@@ -54,6 +54,8 @@ class CustomUserAdmin(UserAdmin):
         "superhost",
         "is_staff",
         "is_superuser",
+        "email_verified",
+        "email_secret",
     )
     # is_ ~~~ 친구들은 클래스 User가 상속받은
     # AbstractUser 속에 있는 정해진 값이다!!!

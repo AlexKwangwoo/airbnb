@@ -3,7 +3,7 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
-from . import forms
+from . import forms, models
 
 # Create your views here.
 class LoginView(FormView):
@@ -41,7 +41,7 @@ class SignUpView(FormView):
     initial = {
         "first_name": "Kwang",
         "last_name": "Back",
-        "email": "bnc3049@naver.com",
+        "email": "bnc3049@gmail.com",
     }
     template_name = "users/signup.html"
     form_class = forms.SignUpForm  # fprms에 정의되어있는 클래스임!
@@ -56,8 +56,27 @@ class SignUpView(FormView):
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
             login(self.request, user)
-
+        user.verify_email()  # user.model파일에 있는 함수를 사용한다!
         return super().form_valid(form)
+
+
+def complete_verification(request, key):
+    try:
+        user = models.User.objects.get(email_secret=key)
+        user.email_verified = True  # 여기서 확인했다고 알려준다! False=>True
+        user.email_secret = ""
+        # 메일열고 here 클릭하기전까지는 admin에 secret이 저장되어있음
+
+        user.save()  # 장고 signupview에 자동 저장 기능이있다!
+        # to do : add success message
+    except models.User.DoesNotExist:
+        # to do: add error message
+        pass
+    return redirect(reverse("core:home"))
+
+
+def github_login(request):
+    pass
 
 
 # class LoginView(View):

@@ -1,8 +1,13 @@
+import uuid  # 번호 무작위 생성!! 8진수 가능(메일검증위해!)
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.core.mail import send_mail
+from django.utils.html import strip_tags
+from django.template.loader import render_to_string  # 탬플릿을 load해서 render 한다!
 
 # 유저파트는 위에것을 import 해서 사용할것이다..
 
-from django.db import models
 
 # Create your models here.
 # 장고 속의 models속의 class Model을 사용한다!!
@@ -57,6 +62,34 @@ class User(AbstractUser):
         choices=CURRENCY_CHOICES, max_length=3, blank=True, default=CURRENCY_KRW
     )
     superhost = models.BooleanField(default=False)
+    email_verified = models.BooleanField(default=False)
+    email_secret = models.CharField(max_length=20, default="", blank=True)
+    # 이메일 시크릿은 유저가 아이디와 비번 만들면 시크릿 숫자를 추가할것이다!
+
+    def verify_email(self):
+        if self.email_verified is False:
+            secret = uuid.uuid4().hex[:20]  # 무작위 숫자 8진수후 20자리 가져오기!
+            self.email_secret = secret
+            html_message = render_to_string(
+                "emails/verify_email.html", {"secret": secret}
+            )
+            # (f'To verify your account click <a href="http://localhost:8000/users/verify/{secret}">here</a>',)
+            send_mail(
+                # 여기서 중요한것은 message를 보낼때 텍스트는 택스트대로
+                # html은 html 로 따로 보내야한다는 점이다! 그래서
+                # 메시지를 html을 제외한 택스트 보내주는거 하나 strip_tags(html_message)
+                # 메시지를 html만 뽑은거 하나를 보내주는것이다!
+                "Verify Kwangwoo_BNB Account",
+                strip_tags(html_message),  # html형태를 제외하고 return함
+                # f'To verify your account click <a href="http://localhost:8000/users/verify/{secret}">here</a>',
+                # string형태로 가서 href 가 안먹힐 것이다!
+                settings.EMAIL_FROM,  # 세팅에서 들고옴!
+                [self.email],  # 유저에게 보낸다!
+                fail_silently=False,  # 애러 신경안쓴다!
+                html_message=html_message,
+            )
+            self.save()  # 이과정을 다하고 저장한다!email_secret 같은것들이
+        return
 
     # 모든 클래스는 밑의 매소드를 가지고 있다.
     # def __str__(self):
