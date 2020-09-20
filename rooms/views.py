@@ -145,11 +145,11 @@ class SearchView(View):
             # 종종 데이터 확인 작업없이 빈 form필요할때 있음, ex)처음 form화면!
             # request.GET을 해주면.. form에서 입력한게
             # 자동으로 서치 눌러도 같은 값을 가지고 있다!!
-            return render(
-                request,
-                "rooms/search.html",
-                {"form": form},  # form = forms.searchForm 에서 가져옴!
-            )
+        return render(
+            request,
+            "rooms/search.html",
+            {"form": form},  # form = forms.searchForm 에서 가져옴!
+        )
 
     # city = request.GET.get("city", "Anywhere")
     # city = str.capitalize(city)

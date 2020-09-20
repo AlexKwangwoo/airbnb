@@ -50,8 +50,12 @@ class User(AbstractUser):
     # 값을 뭐라도 넣어줘야 한다. 안그러면 db에 빈자리 처리가 안된다!
     # 또는 null=true 라고 적어줘서 빈칸 써도 된다고 해준다!!
     birthdate = models.DateField(blank=True, null=True)
-    language = models.CharField(choices=LANGUAGE_CHOICES, max_length=2, blank=True)
-    currency = models.CharField(choices=CURRENCY_CHOICES, max_length=3, blank=True)
+    language = models.CharField(
+        choices=LANGUAGE_CHOICES, max_length=2, blank=True, default=LANGUAGE_KOREAN
+    )
+    currency = models.CharField(
+        choices=CURRENCY_CHOICES, max_length=3, blank=True, default=CURRENCY_KRW
+    )
     superhost = models.BooleanField(default=False)
 
     # 모든 클래스는 밑의 매소드를 가지고 있다.

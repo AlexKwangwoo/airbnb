@@ -1,4 +1,16 @@
 <a href="{% url "core:home" %}">Nbnb</a>
 <ul>
-  <li><a href="#">Login</a></li>
+
+  {% if user.is_authenticated %}
+  <!--로그인 되어있다면!!!-->
+  <!--nav는 어떻게 user에 접근하는가? 
+  Django는 context Processor함수가 있는데 template에 정보 추가하는역할 함
+  어디서든 template에 접근할수있다, 이경우도 context Processor가있는데
+  Cookie를 가지고 와서 user를 찾고 그걸 template에 자동으로 넣어줌!-->
+  <li><a href="{% url "users:logout" %}">Log out</a></li>
+
+  {% else %}
+  <li><a href="{% url "users:login" %}">Log in</a></li>
+  <li><a href="{% url "users:signup" %}">Sign up</a></li>
+  {% endif %}
 </ul>
