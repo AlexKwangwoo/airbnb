@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from . import models
 
 
@@ -24,6 +25,13 @@ class LoginForm(forms.Form):
             self.add_error("email", forms.ValidationError("User does not exist"))
 
 
+# class SignUpForm(UserCreationForm):
+#     username = forms.EmailField(label="Email")
+# 요거 18강 마지막 이거 해볼랬는데.. signup에서 자꾸 오류떠서 다시 월래대로 감!
+# 결국 바꾼건.. 밑에꺼랑 요거다!
+
+
+# ------------------- form.modelform을 usercreationForm으로 바꿨따.. 보고싶으면 주석 전체 해제하면됨
 # -----중요!! modelForm은 결국 커스터마이징이 쉽지않아
 class SignUpForm(forms.ModelForm):
     # forms.Form은 저장을한다..즉 signup결과를 저장할수있다

@@ -5,6 +5,9 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
+from django.core.files.base import ContentFile  # 사진보여줄때 필요!
+
+# from django.contrib.auth.forms import UserCreationForm # 여기안하고 form에 적용할거임
 from . import forms, models
 
 # Create your views here.
@@ -47,6 +50,8 @@ class SignUpView(FormView):
     }
     template_name = "users/signup.html"
     form_class = forms.SignUpForm  # fprms에 정의되어있는 클래스임!
+    # 비밀번호 (깃허브, 카톡을 위해 form_class를 다른것으로 바꿔준다!)
+    # form_class = UserCreationForm
     success_url = reverse_lazy("core:home")
 
     def form_valid(self, form):
@@ -118,6 +123,8 @@ def github_callback(request):
             )  # 값을 제이슨으로 넘겨준다고 깃에 쓰어있음!!
             token_json = token_request.json()
             error = token_json.get("error", None)
+            # 토큰json에서 에러를 포함한 문서가있는지 봐야한다
+            # 예를 들어 유효하지 않은 코드가 왔을때!.. 시간지났던지..등등
             if error is not None:
                 # return redirect(reverse("users:login"))
                 raise GithubException()
@@ -126,13 +133,16 @@ def github_callback(request):
                 # 깃허브 API에 request를 보내는걸 만들거임!
                 profile_request = requests.get(
                     # 그 access_token을 가지고 깃허브 api를 request할수있게 된다!
-                    "https://api.github.com/user/mails",  # mails를 써서 프라이빗 메일도 찾아줌!
+                    "https://api.github.com/user",
+                    # emails를 써서 프라이빗 메일도 찾아줌! 또는 깃헙 프리베이트 메일해제!
+                    # 프리벳 문제생기면 !! 이부분 손봐야함!!
                     # 헤더에서 토큰을 보내고
                     headers={
                         "Authorization": f"token {access_token}",
                         "Accept": "application/json",
                     },
                 )
+                # print(profile_request)
                 # 내가만든설명서에 있음 3단계에 적혀있다!! 시키는데로 설명서보고 하는중..
                 profile_json = profile_request.json()
                 username = profile_json.get("login", None)
@@ -163,6 +173,7 @@ def github_callback(request):
                             username=email,
                             bio=bio,
                             login_method=models.User.LOGIN_GITHUB,
+                            email_verified=True,
                             # 이유저는 깃허브로 부터 왔다!
                         )
                         user.set_unusable_password()
@@ -183,6 +194,78 @@ def github_callback(request):
             raise GithubException()
     except GithubException:  # 에러나면 걍 로그인으로 보냄
         # send error message
+        return redirect(reverse("users:login"))
+
+
+def kakao_login(request):
+    client_id = os.environ.get("KAKAO_ID")
+    redirect_uri = "http://localhost:8000/users/login/kakao/callback"
+    return redirect(
+        f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+    )
+
+
+class KakaoException(Exception):
+    pass
+
+
+def kakao_callback(request):
+    try:
+        code = request.GET.get("code")
+        client_id = os.environ.get("KAKAO_ID")
+        redirect_uri = "http://localhost:8000/users/login/kakao/callback"
+        token_request = requests.get(
+            f"https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={client_id}&redirect_uri={redirect_uri}&code={code}"
+        )  # 여기서 access token을 얻는다!
+        token_json = token_request.json()
+        error = token_json.get("error", None)
+        if error is not None:
+            raise KakaoException()
+        access_token = token_json.get("access_token")
+        # if 검사후 json에 access token이 있다.. get으로 가져온다!
+        profile_request = requests.get(
+            "https://kapi.kakao.com/v2/user/me",  # 와... 한칸 띄워져 있었다고 404오류 계쏙남... me다음에
+            headers={"Authorization": f"Bearer {access_token}"},
+        )  # 카카오톡 문서에 나와있다!
+
+        profile_json = profile_request.json()
+        email = profile_json.get("kakao_account").get("email")
+        # 여기서 kaccount_email은 json의 속성이름으로 바꾸면 안된다!
+        if email is None:
+            raise KakaoException()
+        properties = profile_json.get("properties")
+        nickname = properties.get("nickname", None)
+        profile_image = (
+            profile_json.get("kakao_account", None)
+            .get("profile", None)
+            .get("profile_image_url", None)
+        )
+        try:
+            user = models.User.objects.get(email=email)
+            if user.login_method != models.User.LOGIN_KAKAO:
+                raise KakaoException()
+        except models.User.DoesNotExist:
+            user = models.User.objects.create(
+                email=email,
+                username=email,
+                first_name=nickname,
+                login_method=models.User.LOGIN_KAKAO,
+                email_verified=True,
+                # 이유저는 카카오로 부터 왔다!
+            )
+            user.set_unusable_password()
+            user.save()
+            if profile_image is not None:  # 사진을 넣고싶으면 이렇게 하자!! 외우자!!
+                # import 만 잘해주면된다!!
+                photo_request = requests.get(profile_image)  # URL로 부터 request한다!
+                # photo_request.content()  # 0,1 바이트다! 그게 content다!
+                user.avatar.save(
+                    f"{nickname}-avatar.jpg", ContentFile(photo_request.content)
+                )  # ContentFile 안해주면.. 엄청 긴 글자만 보인다!, 그리고 저장된다!
+
+        login(request, user)
+        return redirect(reverse("core:home"))
+    except KakaoException:
         return redirect(reverse("users:login"))
 
 
