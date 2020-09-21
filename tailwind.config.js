@@ -5,7 +5,18 @@ module.exports = {
   },
   purge: [],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        // doc에 없을때 만들면된다!! 0.3이런 숫자 업스면!!
+        // 왼쪽은 class name이고..(입력값. class안에!) 오른쪽은 css값이다!
+        "25vh": "25vh",
+        "50vh": "50vh",
+        "75vh": "75vh",
+      },
+      borderRadius: {
+        xl: "1.5rem"
+      },
+    },
   },
   variants: {},
   plugins: [],

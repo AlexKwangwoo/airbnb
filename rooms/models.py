@@ -134,3 +134,9 @@ class Room(core_models.TimeStampedModel):
             # models 파일속으 rooms 속의 related_name="reviews" <- 이것이다
         return 0
         # fake 방을만들려는데 all rating =0 가 떠서 나눠줄수가 없다함!
+
+    def first_photo(self):  # room_card에 사진을 가져오기 위한 메소드!
+        (photo,) = self.photos.all()[:1]
+        # 쿼리셋인데.. photo에 저렇게 하면 들어가지않는데 , 를 추가로주면
+        # 파이썬은.. 쿼리셋의 첫번째 요소인걸 안다!
+        return photo.file.url

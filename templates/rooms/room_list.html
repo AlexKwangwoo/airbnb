@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 <!-- 모두 같은 폴더잇다고 생각하고 경로 설정해야한다
 <../base 이렇게 (절대경로) 해주면 안된다!!
@@ -12,51 +12,53 @@ Home
 
 {% block content %}
 
-{{now}}
+<div class="container mx-auto pb-10">
+  <div class="rounded-xl -mx-40 bg-gray-800 h-50vh mt-32 mb-24 bg-cover bg-center"
+    style="background-image:url({% static 'img/bg2.jpg' %})">
+  </div>
 
-<!--view파일에서 ListView 상속된... 이친구가 
-object list를 반환 바로해줌! 이름 바꾸고싶었음 !! 
-view에서 context_object_name = "rooms" 를통해 
-\{% for room in object_list %\}를 바꿈-->
-{% for room in rooms %}
-<h3>
-  <a href="{% url "rooms:detail" room.pk %}">
-    <!-- rooms = namespace / detail = name 이다!! 변수설정에서 가져온것!
-        config url과 rooms의 url에서 가져왔다. 
-        detail은 argument <int:pk>를 기다리고 있다!! 입력 필수!!-->
-    {{room.name}} / ${{room.price}}
-  </a>
-</h3>
-{% endfor %}
+  <!--view파일에서 ListView 상속된... 이친구가 
+  object list를 반환 바로해줌! 이름 바꾸고싶었음 !! 
+  view에서 context_object_name = " rooms" 를통해 \{% for room in object_list %\}를 바꿈-->
 
+  <div class="flex flex-wrap -mx-40">
+    {% for room in rooms %}
+    {% include "partials/room_card.html" with room=room %}
+    <!--for문의 room을 가져온다! 왼쪽룸이 저 include안으로 가고 오른쪽룸이 for문의 room이다-->
+    {% endfor %}
+  </div>
 
-<!-- page=\{\{page-1\}\} 이 작동이 안한다.. 그래서 |add:
-을 써서 페이지를 더하고 빼줄것이다. 장고 templates tags기능임! 
-paginator에 num_pages 속성이 있음! 전체 페이지!!!-->
-<h5>
-  {% if page_obj.has_previous %}
-  <!-- <a href=" ?page={{page.number|add:-1}}">Previous</a>
-  그리고 previous_page_number() 함수가 되어야하는데 장고 탬플릿은 () 안붙인다!-->
-  <a href="?page={{page_obj.previous_page_number}}">Previous</a>
-  {% endif %}
-  <!--Page {{page.number}} of {{page.paginator.num_pages}} 장고를 크게이용!! -->
-  Page {{page_obj.number}} of {{page_obj.paginator.num_pages}}
+  <!-- page=\{\{page-1\}\} 이 작동이 안한다.. 그래서 |add:
+  을 써서 페이지를 더하고 빼줄것이다. 장고 templates tags기능임! 
+  paginator에 num_pages 속성이 있음! 전체 페이지!!!-->
+  <div class="flex items-center justify-center mx-auto container">
+    {% if page_obj.has_previous %}
+    <!-- <a href=" ?page={{page.number|add:-1}}">Previous</a>
+    그리고 previous_page_number() 함수가 되어야하는데 장고 탬플릿은 () 안붙인다!-->
+    <a href="?page={{page_obj.previous_page_number}}" class="text-teal-500">
+      <i class="fas fa-arrow-left fa-lg"></i>
+    </a>
+    {% endif %}
 
-  {% if page_obj.has_next%}
-  <!-- <a href="?page={{page.number|add:1}}">Next</a> if + has가 없었다면
-  next_opage_number 에서 오류를 보낼것이다!-->
-  <a href="?page={{page_obj.next_page_number}}">Next</a>
-  {% endif %}
+    <!--Page {{page.number}} of {{page.paginator.num_pages}} 장고를 크게이용!! -->
+    <span class="mx-3 font-medium text-lg">{{page_obj.number}} of {{page_obj.paginator.num_pages}}</span>
 
-</h5>
+    {% if page_obj.has_next%}
+    <!-- <a href="?page={{page.number|add:1}}">Next</a> if + has가 없었다면
+    next_opage_number 에서 오류를 보낼것이다!-->
+    <a href="?page={{page_obj.next_page_number}}" class="text-teal-500">
+      <i class="fas fa-arrow-right fa-lg"></i>
+      <!-- fa-lg는 폰트 어썸 기능임!-->
+    </a>
+    {% endif %}
 
+  </div>
 
-<!-- in다음에 range(1,page_count) 할려했으나 장고템플리이 
-다 적용을 못해서.. view에서 변수값을 입력해 page_range를 불러왔다!
-{% for page in page_range %}
-<a href="?page={{page}}">{{page}}</a>
-{% endfor %} // 다른걸 해보자!!
--->
-
-
-{% endblock %}
+  <!-- in다음에 range(1,page_count) 할려했으나 장고템플리이 
+  다 적용을 못해서.. view에서 변수값을 입력해 page_range를 불러왔다!
+  {% for page in page_range %}
+  <a href="?page={{page}}">{{page}}</a>
+  {% endfor %} // 다른걸 해보자!!
+  -->
+</div>
+{% endblock content %}

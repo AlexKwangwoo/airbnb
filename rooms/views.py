@@ -21,7 +21,7 @@ class HomeView(ListView):
     """ HomeView Definition """
 
     model = models.Room
-    paginate_by = 10
+    paginate_by = 12
     # 정해져 있는 변수다.. 10줄기준으로 나눔.. 한줄로 끝!!!
     paginate_orphans = 5
     ordering = "created"
