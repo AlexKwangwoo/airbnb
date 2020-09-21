@@ -140,3 +140,4 @@ cython_debug/
 # Window_my saving
 .DS_Stroe
 uploads/
+node_modules/
