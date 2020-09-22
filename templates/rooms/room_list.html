@@ -23,7 +23,7 @@ Home
 
   <div class="flex flex-wrap -mx-40">
     {% for room in rooms %}
-    {% include "partials/room_card.html" with room=room %}
+    {% include "mixins/room_card.html" with room=room %}
     <!--for문의 room을 가져온다! 왼쪽룸이 저 include안으로 가고 오른쪽룸이 for문의 room이다-->
     {% endfor %}
   </div>

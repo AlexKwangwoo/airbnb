@@ -17,6 +17,8 @@ from . import models, forms
 # Create your views here.
 # 클래스를 만들어주면서 탬플릿 rooms에 room_list를 만들어줌
 # 이름 바뀌면 안됨! 컴파일러가 원함! import, render 할필요가없다!!
+# listView는 탬플릿 파일을 기본적으로 찾아본다!
+# rooms가 appname이름이라 탬플릿파일속 rooms/room_list는 자동임
 class HomeView(ListView):
     """ HomeView Definition """
 

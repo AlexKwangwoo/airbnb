@@ -1,14 +1,21 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from . import models
+
+# from django.contrib.auth.forms import UserCreationForm
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    # email = forms.EmailField()
+    # password = forms.CharField(widget=forms.PasswordInput)
+    # 장고의 input을 바꾸는 방법은 밑에 방법뿐이다..placeholder
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "Email"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
 
     def clean(self):
         email = self.cleaned_data.get("email")
+        # cleaned_data는 사용자가 입력한 데이터를 뜻한다.
         password = self.cleaned_data.get("password")
         try:
             user = models.User.objects.get(email=email)
@@ -38,20 +45,35 @@ class SignUpForm(forms.ModelForm):
     class Meta:  # modelform이 알아서 중복 이메일이 있는지 검사한다!
         # 클래스 이름도 바뀌면 안됨!!
         model = models.User
-        fields = ("first_name", "last_name", "email", "birthdate")
+        fields = ("first_name", "last_name", "email")
         # 여기에 추가하면 회원가입 양식을 늘리는것이다 ex) "birthdate"
+        # fields가 있을때 widgets 바꾸는법은 밑에 있다!
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email Name"}),
+        }
 
-    password = forms.CharField(widget=forms.PasswordInput)
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"})
+    )
+    # password = forms.CharField(widget=forms.PasswordInput)
+    # password1 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
 
     # ------------------------------------------------------------------
-    # def clean_email(self):
-    #     email = self.cleaned_data.get("email")
-    #     try:
-    #         models.User.objects.get(email=email)  # find User 있다면 밑의 줄 실행!
-    #         raise forms.ValidationError("User already exists with")
-    #     except models.User.DoesNotExist:  # 유저가 없으면 이 애러가 뜨고 email리턴!
-    #         return email
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        try:
+            models.User.objects.get(email=email)  # find User 있다면 밑의 줄 실행!
+            raise forms.ValidationError(
+                "That email is already taken", code="existing_user"
+            )
+        except models.User.DoesNotExist:  # 유저가 없으면 이 애러가 뜨고 email리턴!
+            return email
+
     # ------------- 필요없다 왜냐하면 modelForm이 알아서 clean 시킬꺼다!
 
     def clean_password1(self):

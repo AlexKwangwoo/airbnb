@@ -10,7 +10,7 @@
   <title>{% block page_title %}{% endblock page_title %}| KwangBnb</title>
 </head>
 
-<body class="text-gray-800 mt-24 font-light">
+<body class="text-gray-800 mt-24 font-normal">
   <header
     class="container max-w-full inset-0 flex items-center justify-between px-6 h-20 border-b border-gray-400 fixed bg-white">
     <div class="flex items-center w-1/3">
@@ -20,7 +20,7 @@
 
       <!--max-w-full 가로넓이 최대! 마진0-->
       {% block search-bar %}
-      <form method=" get" action="{% url "rooms:search" %}" class="w-9/12">
+      <form method="get" action="{% url "rooms:search" %}" class="w-9/12">
         <input
           class="search-box w-full border px-5 py-3 font-medium text-gray-900 placeholder-gray-600 rounded-sm w-64 shadow-md hover:shadow-lg focus:outline-none"
           name="city" placeholder="Search by city"></input>
@@ -33,6 +33,7 @@
   {% block content %}
   {%endblock%}
 
+  {% include "partials/messages.html" %}
   {%include "partials/footer.html" %}
 </body>
 

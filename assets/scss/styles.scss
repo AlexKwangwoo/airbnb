@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 
-
 // basic size는 16px 이다..
 // 0.5rem은 맨 상위 px의 비율이다! 아무것도없으면 8px이라는 뜻!
 
@@ -18,10 +17,43 @@
 
   &:hover {
     // 호버와 같이 몇몇 기능들은 sass에 포함시킬수가 없어서 &:+기능 을써야함!
-    @apply border-gray-600
+    @apply border-gray-600;
   }
 
   //이거의 의미는 .nav_link a{} 랑 똑같다.. scss가 알고 알아서 해준다!
+}
+
+.btn {
+  @apply w-full text-center rounded-sm py-5 font-light text-lg;
+}
+
+input {
+  @apply w-full text-center rounded-sm py-5 font-light text-lg text-left border border-gray-600 px-5;
+
+  &:focus {
+    @apply outline-none border-teal-500;
+  }
+
+  //focus도 run css 안된다!
+
+}
+
+form {
+
+  // 즉 폼안에 인풋속에 애러가 있으면 apply bgred적용하는데 포커스오면 gray로 바꾼다!
+  .input {
+    @apply mb-3;
+
+    &.has_error {
+      input {
+        @apply bg-red-200 border-gray-400;
+
+        &:focus {
+          @apply border-gray-600;
+        }
+      }
+    }
+  }
 }
 
 @tailwind utilities;

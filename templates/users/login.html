@@ -9,13 +9,38 @@ Log In
 
 {% block content %}
 
-{% include "partials/social_login.html" %}
 
-<form method="POST" action="{% url "users:login" %}">
-  {% csrf_token %}
-  <!-- csrf_token 을 이용하여 login쪽에만 so post를 받게 한다!!
-  다른곳에서 정보를 가로채 갈수 없게 한다!-->
-  {{form.as_p}}
-  <button>Login</button>
-</form>
+<div class="container lg:w-5/12 md:w-1/2 xl:w-1/4 mx-auto my-10 flex flex-col items-center border p-6 border-gray-400">
+
+  {% include "partials/social_login.html" %}
+  {% include "mixins/auth/auth_form.html" with form=form name="Log in"%}
+  {% comment %} 위에껄로 하나로 로그인과 사인업을 겹쳤다! 필드만 검사해주면돼서
+  필드를 검사하는 방식만 auth_form에 넣어줌!
+  <form method="POST" action="{% url "users:login" %}" class="w-full">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+    <span class="text-red-700 font-medium text-sm">{{error}}</span>
+    {% endfor%}
+    {% endif %}
+    <!-- csrf_token 을 이용하여 login쪽에만 so post를 받게 한다!!
+    다른곳에서 정보를 가로채 갈수 없게 한다!-->
+    <!--{{form.as_p}}
+    <input type="email" placeholder="Email" class="mb-3">
+    <input type="password" placeholder="Password" class="mb-3">
+    교체해준다.. form.as_p는 양식 적용이안돼서..
+    -->
+
+    {% for field in form  %}
+    {% include "partials/form_input.html" with field=field %}
+    {% endfor %}
+
+    <button class="btn bg-red-500 text-white">Login</button> {% endcomment %}
+  </form>
+  <div class="mt-5">
+    <span class="mr-2">Don't have an account? </span>
+    <a href="{% url "users:signup" %}" class="text-teal-500 font-medium">Sign up</a>
+  </div>
+
+</div>
 {% endblock content %}

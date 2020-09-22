@@ -1,0 +1,18 @@
+<form method="POST" class="w-full">
+  <!--action="{% url "users:signup" %} post의 action으로 줄필요가 없는게
+  어짜피 돌아가면 action이 원하는 그페이지에 있따!-->
+  {% csrf_token %}
+  <!-- csrf_token 을 이용하여 login쪽에만 so post를 받게 한다!!
+  다른곳에서 정보를 가로채 갈수 없게 한다!-->
+
+  {% if form.non_field_errors %}
+  {% for error in form.non_field_errors %}
+  <span class="text-red-700 font-medium text-sm">{{error}}</span>
+  {% endfor%}
+  {% endif %}
+
+  {% for field in form %}
+  {% include "mixins/auth/form_input.html" with field=field %}
+  {% endfor %}
+  <button class="btn bg-red-500 text-white">{{name}}</button>
+</form>

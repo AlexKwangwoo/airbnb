@@ -6,9 +6,11 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.core.files.base import ContentFile  # 사진보여줄때 필요!
+from django.contrib import messages
+from . import forms, models
 
 # from django.contrib.auth.forms import UserCreationForm # 여기안하고 form에 적용할거임
-from . import forms, models
+
 
 # Create your views here.
 class LoginView(FormView):
@@ -43,13 +45,8 @@ def log_out(request):
 
 
 class SignUpView(FormView):
-    initial = {
-        "first_name": "Kwang",
-        "last_name": "Back",
-        "email": "bnc3049@gmail.com",
-    }
     template_name = "users/signup.html"
-    form_class = forms.SignUpForm  # fprms에 정의되어있는 클래스임!
+    form_class = forms.SignUpForm  # forms에 정의되어있는 클래스임!
     # 비밀번호 (깃허브, 카톡을 위해 form_class를 다른것으로 바꿔준다!)
     # form_class = UserCreationForm
     success_url = reverse_lazy("core:home")
@@ -212,6 +209,7 @@ class KakaoException(Exception):
 def kakao_callback(request):
     try:
         code = request.GET.get("code")
+        raise KakaoException("Something went wrong.")
         client_id = os.environ.get("KAKAO_ID")
         redirect_uri = "http://localhost:8000/users/login/kakao/callback"
         token_request = requests.get(
@@ -220,7 +218,7 @@ def kakao_callback(request):
         token_json = token_request.json()
         error = token_json.get("error", None)
         if error is not None:
-            raise KakaoException()
+            raise KakaoException("Can't get authorization code.")
         access_token = token_json.get("access_token")
         # if 검사후 json에 access token이 있다.. get으로 가져온다!
         profile_request = requests.get(
@@ -266,6 +264,7 @@ def kakao_callback(request):
         login(request, user)
         return redirect(reverse("core:home"))
     except KakaoException:
+        messages.error(request, "Something went wrong")
         return redirect(reverse("users:login"))
 
 

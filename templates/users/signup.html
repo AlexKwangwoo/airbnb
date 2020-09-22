@@ -9,13 +9,17 @@ Sign Up
 
 {% block content %}
 
-{% include "partials/social_login.html" %}
+<div class="container lg:w-5/12 md:w-1/2 xl:w-1/4 mx-auto my-10 flex flex-col items-center border p-6 border-gray-400">
+  {% include "partials/social_login.html" %}
 
-<form method="POST" action="{% url "users:signup" %}">
-  {% csrf_token %}
-  <!-- csrf_token 을 이용하여 login쪽에만 so post를 받게 한다!!
-  다른곳에서 정보를 가로채 갈수 없게 한다!-->
-  {{form.as_p}}
-  <button>Sign up</button>
-</form>
+  {% include "mixins/auth/auth_form.html" with form=form name="Sign up"%}
+  <!-- name = sign up을 auth_form에서 가져갈수있게 해준다! -->
+
+  <div class="mt-5">
+    <span class="mr-2">Have an account?</span>
+    <a href="{% url "users:login" %}" class="text-teal-500 font-medium">Login</a>
+  </div>
+
+
+</div>
 {% endblock content %}
