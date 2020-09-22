@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+{{user_obj.first_name}}'s Profile
+{% endblock page_title %}
+
+
+{% block content %}
+
+{% if user_obj.rooms.count < 5 %}
+<div class="h-75vh">
+  {%else%}
+  <div>
+    {% endif %}
+    <div
+      class="container lg:w-5/12 md:w-1/2 xl:w-1/4 mx-auto my-10 flex flex-col items-center border p-6 border-gray-400">
+      {% include "mixins/user_avatar.html" with user=user_obj%}
+      <!--with을 통해 include 안으로 변수를 넘겨준다 생각하면됨 이파일의 user_obj는
+  include파일 안으로 들어가서 user가 됩니다 라는 뜻임!-->
+
+      <div class="flex items-center">
+        <span class=" text-3xl mt-1">{{user_obj.first_name}} </span>
+        {% if user_obj.superhost %}
+        <i class="fas fa-check-circle text-teal-400 ml-1"></i>
+        {% endif %}
+      </div>
+
+      <span class="text-lg text-center mb-5">{{user_obj.bio}}</span>
+
+      {% if user == user_obj %}
+      <a href="#" class="btn-link">Edit Profile</a>
+
+      {% endif %}
+
+      <!--{{Hello}}-->
+    </div>
+
+    {% if user_obj.rooms.count > 0 %}
+    <div class="container mx-auto pb-10 flex flex-col items-center">
+      <h3 class="mb-12 text-2xl">{{user_obj.first_name}}'s Rooms</h3>
+      <div class="flex flex-wrap w-full -mx-40 mb-10">
+        {% for room in user_obj.rooms.all %}
+        {% include "mixins/room_card.html" with room=room %}
+        <!--for문의 room을 가져온다! 왼쪽룸이 저 include안으로 가고 오른쪽룸이 for문의 room이다-->
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% endblock content %}

@@ -21,7 +21,7 @@ Home
   object list를 반환 바로해줌! 이름 바꾸고싶었음 !! 
   view에서 context_object_name = " rooms" 를통해 \{% for room in object_list %\}를 바꿈-->
 
-  <div class="flex flex-wrap -mx-40">
+  <div class="flex flex-wrap -mx-40 mb-10">
     {% for room in rooms %}
     {% include "mixins/room_card.html" with room=room %}
     <!--for문의 room을 가져온다! 왼쪽룸이 저 include안으로 가고 오른쪽룸이 for문의 room이다-->

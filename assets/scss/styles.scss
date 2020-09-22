@@ -27,6 +27,10 @@
   @apply w-full text-center rounded-sm py-5 font-light text-lg;
 }
 
+.btn-link {
+  @apply w-full text-center py-3 rounded-lg font-light text-lg text-white bg-red-500;
+}
+
 input {
   @apply w-full text-center rounded-sm py-5 font-light text-lg text-left border border-gray-600 px-5;
 
@@ -53,6 +57,52 @@ form {
         }
       }
     }
+  }
+}
+
+// 로그인 성공또는 상태 메세지 애니메이션 만들기!
+@keyframes messageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+
+  5% {
+    opacity: 1;
+    transform: translateY(50px);
+  }
+
+  95% {
+    opacity: 1;
+    transform: translateY(50px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
+.message {
+  animation: messageFadeIn 3s ease-in-out forwards;
+  //애니메이션 적용중! 애니메이션 100% 끝나면 월래 컴포넌트가 가지고있는 속성으로 간다
+  // 즉 opacity:1로 되서 안없어지는데 forwards 쓰면 속성 마지막 값을 가지게 된다!
+  // 즉 opacity 100% 의 0이 된다!
+
+  &.error {
+    @apply bg-red-600;
+  }
+
+  &.info {
+    @apply bg-blue-500;
+  }
+
+  &.success {
+    @apply bg-green-500;
+  }
+
+  &.warning {
+    @apply bg-yellow-400;
   }
 }
 

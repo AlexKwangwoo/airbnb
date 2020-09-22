@@ -4,7 +4,10 @@
   <!--nav는 어떻게 user에 접근하는가? 
   Django는 context Processor함수가 있는데 template에 정보 추가하는역할 함
   어디서든 template에 접근할수있다, 이경우도 context Processor가있는데
-  Cookie를 가지고 와서 user를 찾고 그걸 template에 자동으로 넣어줌!-->
+  Cookie를 가지고 와서 user를 찾고 그걸 template에 자동으로 넣어줌!
+  또한 절대 경로를 추가해줘야지만 admin에서 유저에서 view보기 버튼이 생김!>
+  -->
+  <li class="nav_link"><a href="{{user.get_absolute_url}}">Profile</a></li>
   <li class="nav_link"><a href="{% url "users:logout" %}">Log out</a></li>
 
   {% else %}

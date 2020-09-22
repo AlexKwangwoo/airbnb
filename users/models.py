@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
+from django.shortcuts import reverse
 from django.template.loader import render_to_string  # 탬플릿을 load해서 render 한다!
 
 # 유저파트는 위에것을 import 해서 사용할것이다..
@@ -78,6 +79,10 @@ class User(AbstractUser):
     login_method = models.CharField(
         max_length=50, choices=LOGIN_CHOICES, default=LOGIN_EMAIL
     )
+
+    # user Detail 안에 있는 모델을 보기 위해서..URL을 반환 해야한다
+    def get_absolute_url(self):
+        return reverse("users:profile", kwargs={"pk": self.pk})
 
     def verify_email(self):
         if self.email_verified is False:

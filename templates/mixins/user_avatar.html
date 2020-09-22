@@ -1,0 +1,10 @@
+{% if user.avatar %}
+<div class="h-20 w-20 rounded-full bg-cover" style="background-image: url({{user.avatar.url}});">
+  <!--여기는 div를 뭘로 열지를 if로 통해 구별한다.. 처음 div는 이미지가 있고
+    두번째 else div는 이미지가 없다-->
+  {% else %}
+  <div class="h-20 w-20 rounded-full text-white flex justify-center items-center bg-gray-700 overflow-hidden">
+    <span class="text-3xl">{{user.first_name|first}}</span>
+    <!--|first는 첫번째글자로 필터 하겠다는것이다! 아바타없는경우는 첫글짜로 아바타만들려고!-->
+    {% endif %}
+  </div>
