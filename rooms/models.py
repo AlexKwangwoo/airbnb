@@ -1,7 +1,9 @@
 from django.db import models
+from django.utils import timezone
 from django.urls import reverse
 from django_countries.fields import CountryField
 from core import models as core_models
+from cal import Calendar
 
 # from users import models as user_models
 
@@ -122,6 +124,8 @@ class Room(core_models.TimeStampedModel):
         # url name을 받아서 실제 url을 리턴해준다!
         # detail은 argument가 필요하다!!
         # 이것을 통해 백앤드에서 프론트 앤드로 보내준다!
+        # /또는 만약 프론트엔드에서 룸에서 edit이 일어날경우 이게 작동해서 엔터친후(수정후)
+        # 다시 룸페이지(사진있고 리뷰있고)로 돌아가게한다!
 
     def total_rating(self):
         all_reviews = self.reviews.all()
@@ -136,7 +140,31 @@ class Room(core_models.TimeStampedModel):
         # fake 방을만들려는데 all rating =0 가 떠서 나눠줄수가 없다함!
 
     def first_photo(self):  # room_card에 사진을 가져오기 위한 메소드!
-        (photo,) = self.photos.all()[:1]
+        try:
+            (photo,) = self.photos.all()[:1]
+            return photo.file.url
+        except ValueError:
+            return None
         # 쿼리셋인데.. photo에 저렇게 하면 들어가지않는데 , 를 추가로주면
         # 파이썬은.. 쿼리셋의 첫번째 요소인걸 안다!
-        return photo.file.url
+
+    def get_next_four_photos(self):
+        photos = self.photos.all()[1:5]
+        return photos
+
+    def get_calenders(self):
+        now = timezone.now()
+        this_year = now.year
+        this_month = now.month
+        next_month = this_month + 1
+        if this_month == 12:
+            next_month = 1
+        this_month_cal = Calendar(this_year, this_month)
+        next_month_cal = Calendar(this_year, next_month)
+        return [this_month_cal, next_month_cal]
+
+    # def get_beds(self):
+    #     if self.beds == 1:
+    #         return "1 bed"
+    #     else:
+    #         return f"{self.beds} beds"

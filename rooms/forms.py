@@ -33,3 +33,53 @@ class SearchForm(forms.Form):
         queryset=models.HouseRule.objects.all(),
         widget=forms.CheckboxSelectMultiple,
     )
+
+
+class CreatePhotoForm(forms.ModelForm):
+    class Meta:
+        model = models.Photo
+        fields = (
+            "caption",
+            "file",
+        )
+
+    def save(self, pk, *args, **kwargs):
+        # pk값을 가져올수 없기떄문에... view.py에서
+        # AddPhotoView클래스 안에서 form_valid 안의 메소드에 pk인자를 받을수있게
+        # 다시 만든다!
+        photo = super().save(commit=False)
+        room = models.Room.objects.get(pk=pk)
+        photo.room = room
+        photo.save()
+        # saved된 method를 intercepting 하고있다!
+        # 왜냐하면 url에 있는 pk를 가져와야해서!
+        # 조금 어려워서 23.5페이지 참고!
+
+
+class CreateRoomForm(forms.ModelForm):
+    class Meta:
+        model = models.Room
+        fields = (
+            "name",
+            "description",
+            "country",
+            "city",
+            "price",
+            "address",
+            "guests",
+            "beds",
+            "bedrooms",
+            "baths",
+            "check_in",
+            "check_out",
+            "room_type",
+            "amenities",
+            "facilities",
+            "house_rules",
+        )
+
+    def save(self, *args, **kwargs):
+        room = super().save(commit=False)
+        # 커밋 false는 object는 만들지만 db에 저장하지 않는다
+        # 여기서 CreateRoomview (view파일안) 안에서 form_valid로 넘겨준다!
+        return room

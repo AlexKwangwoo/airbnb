@@ -7,6 +7,23 @@
   Cookie를 가지고 와서 user를 찾고 그걸 template에 자동으로 넣어줌!
   또한 절대 경로를 추가해줘야지만 admin에서 유저에서 view보기 버튼이 생김!>
   -->
+
+
+  <li class="nav_link">
+    <a href="{% url 'users:switch-hosting'  %}">
+      {% if request.session.is_hosting %}
+      <!--유저인지 호스트인지 세션을 체크 해야한다!-->
+      Stop hosting
+      {% else %}
+      Start hosting
+      {% endif %}
+    </a>
+  </li>
+
+  {% if request.session.is_hosting %}
+  <li class="nav_link"><a href="{% url 'rooms:create' %}">Create Room</a></li>
+  {% endif %}
+
   <li class="nav_link"><a href="{{user.get_absolute_url}}">Profile</a></li>
   <li class="nav_link"><a href="{% url "users:logout" %}">Log out</a></li>
 

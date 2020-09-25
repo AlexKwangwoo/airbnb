@@ -54,7 +54,7 @@ PROJECT_APPS = [
     "conversations.apps.ConversationConfig",
 ]
 
-INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -155,3 +155,7 @@ EMAIL_HOST_USER = os.environ.get("MAILGUN_USERNAME")
 EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_PASSWORD")
 EMAIL_FROM = "Happy_kwangbnb@sandbox4f98eac2888f4508b1b8d5cf88748830.mailgun.org"
 # FROM에서 @뒤의 도메인은 메일건에서 준것이여야 한다!
+
+# Auth
+
+LOGIN_URL = "/users/login/"

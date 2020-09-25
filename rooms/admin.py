@@ -144,7 +144,8 @@ class RoomAdmin(admin.ModelAdmin):
         "house_rules",
     )  # horizontal filter 은 many to many 이용가능!!
 
-    search_fields = ("^city", "^host__username")
+    search_fields = ("^city", "^host__username", "name")
+    # 여기서 admin에서 방 검색 할때 뭘로 찾아줄지 추가할수있다!
     # search_fields = ("city",) ^ 없으면 bu만 해도 busan찾아진다
     # = 는 정확하게 입력..대소문자!
     # host.username 이 아니라 search는 __ + 속성 값 사용 가능!

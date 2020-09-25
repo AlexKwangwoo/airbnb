@@ -26,6 +26,7 @@ class Command(BaseCommand):
             {
                 "is_staff": False,
                 "is_superuser": False,  # 이 두값들은 false설정해준다!
+                "avatar": None,  # 이것을 통해서 아바타를 다 없앴다!
             },
         )  # 첫번째는 필드가 들어가고! 두번째는 갯수가들어간다!
         # number은 위에서 (argument를 받아오기위에 만들어짐) 받아온다!

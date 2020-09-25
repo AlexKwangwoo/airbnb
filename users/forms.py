@@ -57,9 +57,9 @@ class SignUpForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"placeholder": "Password"})
     )
-    password1 = forms.CharField(
+    Confirm_Password = forms.CharField(
         widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"})
-    )
+    )  # 레이블 설정은 여기서 바꾸면 된다!!
     # password = forms.CharField(widget=forms.PasswordInput)
     # password1 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
 
@@ -86,6 +86,7 @@ class SignUpForm(forms.ModelForm):
             return password
 
     # 세이브 메쏘드 없어도 저장 자체가 되는 클래스 이다!!!!!!!!!!!
+    # 저장방식 자체를 우리가 원하는식으로 바꾼것이다!
     # 하지만 유저 이름이 없다.. 이메일로 쓰기 때문에.. 그래서 다시 만든다!
     def save(self, *args, **kwargs):
         user = super().save(commit=False)

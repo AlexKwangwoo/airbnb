@@ -1,24 +1,27 @@
 import os
 import requests
 from django.views import View
-from django.views.generic import FormView, DetailView
+from django.contrib.auth.views import PasswordChangeView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.core.files.base import ContentFile  # 사진보여줄때 필요!
 from django.contrib import messages
-from . import forms, models
+from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin  # 프로필 업데이트하면 나오게한다!
+from . import forms, models, mixins
 
 # from django.contrib.auth.forms import UserCreationForm # 여기안하고 form에 적용할거임
 
 
 # Create your views here.
-class LoginView(FormView):
+class LoginView(mixins.LoggedOutOnlyView, FormView):
     # 이걸 쓰면 get, post 할필요가없다!
 
     template_name = "users/login.html"
     form_class = forms.LoginForm
-    success_url = reverse_lazy("core:home")
+    # success_url = reverse_lazy("core:home") 이거대신 get_success_url을 씀!
     # reverse는 실제 URL을 준다!
     # reverse_lazy는 바로 실행하지 않는다!
     # 필요할때만 실행한다!
@@ -37,6 +40,15 @@ class LoginView(FormView):
         return super().form_valid(form)
         # 이게 호출되면 successURL에 다시가고
         # 다시 다 작동된다!
+
+    def get_success_url(self):
+        # LoggedOutOnlyView 가 작동이되면.. airbnb문서 196장에 잘 써놧음!
+        # 주소 마지막에 갈려고했던곳..이 next=???로적힌다 그래서 next를 받아오는것이다!
+        next_arg = self.request.GET.get("next")
+        if next_arg is not None:
+            return next_arg
+        else:
+            return reverse("core:home")
 
 
 def log_out(request):
@@ -274,6 +286,82 @@ def kakao_callback(request):
 class UserProfileView(DetailView):
     model = models.User
     context_object_name = "user_obj"
+
+
+class UpdateProfileView(mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
+    model = models.User
+    template_name = "users/update-profile.html"
+    fields = (
+        "first_name",
+        "last_name",
+        "gender",
+        "bio",
+        "birthdate",
+        "language",
+        "currency",
+    )  # model form처럼 하고있다!
+
+    success_message = "Profile Updated"  # 프로필 업데이트하면 나오게한다!
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["first_name"].widget.attrs = {"placeholder": "First name"}
+        form.fields["last_name"].widget.attrs = {"placeholder": "Last name"}
+        form.fields["bio"].widget.attrs = {"placeholder": "Bio"}
+        form.fields["birthdate"].widget.attrs = {"placeholder": "Birthdate"}
+        return form  # 이것을 통해서 updateview에서도 플래이스홀더 사용할수있음!
+
+
+class UpdatePasswordView(
+    mixins.EmailLoginOnlyView,
+    mixins.LoggedInOnlyView,
+    SuccessMessageMixin,
+    PasswordChangeView,
+):
+    template_name = "users/update-password.html"
+    success_message = "Password Updated"
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["old_password"].widget.attrs = {"placeholder": "Current password"}
+        form.fields["new_password1"].widget.attrs = {"placeholder": "New password"}
+        form.fields["new_password2"].widget.attrs = {
+            "placeholder": "Confirm new password"
+        }
+        return form  # 이것을 통해서 updateview에서도 플래이스홀더 사용할수있음!
+
+    def get_success_url(self):
+        return self.request.user.get_absolute_url()
+
+
+# @login_required
+# def start_hosting(request):
+#     request.session["is_hosting"] = True
+#     return redirect(reverse("core:home"))
+#     # 호스트가 된사람만이 방을 만들수있게 해줄려는 작업이다!
+
+
+@login_required
+def switch_hosting(request):
+    # 이함수가 콜되면 처음 del한다.. 만약 호스트접속이면..
+    # 이함수가 콜되면 keyError 가 뜨면 호스트가 되게끔 True로 바꿔준다!
+    try:
+        del request.session["is_hosting"]
+    except KeyError:  #
+        request.session["is_hosting"] = True
+    return redirect(reverse("core:home"))
+
+    # def form_valid(self, form):
+    #     email = form.cleaned_data.get("email")
+    #     self.object.username = email
+    #     self.object.save()
+    #     return super().form_valid(form)
+    #  form_valid를 통해 정보를 가로채서 저장을 다른곳에 해준다.!
+    # 예를들어 이메일로받고 그 이메일은 id에 저장을 해버린다!
+
     # 이렇게 해줌으로써 프로파일 내꺼 누르고 다른사람누르고..다시내껄 누를때
     # 남게 아닌 내껄 볼수있다!! user_detail도  {{user.first_name}} 이 아니라
     # {{user_obj.first_name}}로 수정했음!

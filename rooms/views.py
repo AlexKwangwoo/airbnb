@@ -1,7 +1,20 @@
-from django.views.generic import ListView, DetailView, View
-from django.shortcuts import render
+from django.http import Http404  # 방주인 아닌사람이 수정할려고할때 오류 낼려고 가져옴!
+from django.views.generic import (
+    ListView,
+    DetailView,
+    View,
+    UpdateView,
+    CreateView,
+    FormView,
+)
+from django.shortcuts import render, redirect, reverse
 from django_countries import countries
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from users import mixins as user_mixins
 from . import models, forms
 
 # from django.http import Http404
@@ -152,6 +165,122 @@ class SearchView(View):
             "rooms/search.html",
             {"form": form},  # form = forms.searchForm 에서 가져옴!
         )
+
+
+class EditRoomView(user_mixins.LoggedInOnlyView, UpdateView):
+    model = models.Room
+    template_name = "rooms/room_edit.html"  # 주소가 열리면 탬플릿 어디 위치하는지
+    fields = (
+        "name",
+        "description",
+        "country",
+        "city",
+        "price",
+        "address",
+        "guests",
+        "beds",
+        "bedrooms",
+        "baths",
+        "check_in",
+        "check_out",
+        "room_type",
+        "amenities",
+        "facilities",
+        "house_rules",
+    )
+
+    def get_object(self, queryset=None):
+        # 이부분은 로그인한 사람이 방 주인이 아니면 edit을 못하게 해준다!
+        room = super().get_object(queryset=queryset)
+        # print(room.host.pk, self.request.user.pk) 지금 접속자랑 방 주인이랑 pk비교!
+        if room.host.pk != self.request.user.pk:
+            raise Http404()  # page not found 를 띄운다!
+        return room
+
+
+class RoomPhotosView(user_mixins.LoggedInOnlyView, DetailView):
+    # 보호가 되는 roomDetail이다!
+    # 오너면 포토를 볼수있다.
+    # Detail of the room이다!
+    model = models.Room
+    template_name = "rooms/room_photos.html"
+
+    def get_object(self, queryset=None):
+        # 이부분은 로그인한 사람이 방 주인이 아니면 edit을 못하게 해준다!
+        room = super().get_object(queryset=queryset)
+        # print(room.host.pk, self.request.user.pk) 지금 접속자랑 방 주인이랑 pk비교!
+        if room.host.pk != self.request.user.pk:
+            raise Http404()  # page not found 를 띄운다!
+        return room
+
+
+@login_required
+def delete_photo(request, room_pk, photo_pk):
+    user = request.user
+    try:
+        room = models.Room.objects.get(pk=room_pk)
+        if room.host.pk != user.pk:
+            messages.error(request, "Can't delete that photo")
+        else:
+            models.Photo.objects.filter(pk=photo_pk).delete()
+            # 필터된 모든 사진을 삭제 한다! 근데 pk써서 pk에 맞는건 하나라 하나 삭제됨
+            messages.success(request, "Photo Deleted")
+        return redirect(reverse("rooms:photos", kwargs={"pk": room_pk}))
+    except models.Room.DoesNotExist:
+        return redirect(reverse("core:home"))
+
+
+class EditPhotoView(user_mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
+    # SuccessMessageMixin등 상속 위치가 바뀌면 메시지가 안뜬다!!
+    model = models.Photo
+    template_name = "rooms/photo_edit.html"
+    pk_url_kwarg = "photo_pk"
+    success_message = "Photo Updated"
+    # SuccessMessageMixin 을 from에 추가하고 클래스에 추가헤서
+    # 포토 수정시 photo updated 를 띄우게 한다!
+
+    fields = ("caption",)
+    # 필드는 부조껀 튜플이 되어야 한다!
+
+    def get_success_url(self):
+        room_pk = self.kwargs.get("room_pk")
+        return reverse("rooms:photos", kwargs={"pk": room_pk})
+
+    # 사진 수정후 edit delete 페이지로 이동시킨다!
+
+
+class AddPhotoView(user_mixins.LoggedInOnlyView, FormView):
+    model = models.Photo
+    template_name = "rooms/photo_create.html"
+    fields = (
+        "caption",
+        "file",
+    )
+    form_class = forms.CreatePhotoForm
+    # success_message = "Photo Uploaded"
+    # SuccessMessageMixin 을 쓰면 formview를 쓸수없다!! 그래서 직접 만들어야함!
+
+    def form_valid(self, form):
+        pk = self.kwargs.get("pk")
+        form.save(pk)  # 이값은 forms CreatePhotoForm의 save()메쏘드로 넘길것임!
+        messages.success(self.request, "Photo Uploaded")
+        # 여기서는 success message를 대처함!
+        return redirect(reverse("rooms:photos", kwargs={"pk": pk}))
+
+
+class CreateRoomView(user_mixins.LoggedInOnlyView, FormView):
+    form_class = forms.CreateRoomForm
+    template_name = "rooms/room_create.html"
+
+    def form_valid(self, form):
+        room = form.save()
+        # form 의  def save return에서 룸을 가져온다!
+        room.host = self.request.user
+        # room을 바꾸고
+        room.save()  # 마지막으로 저장한다!
+        form.save_m2m()  # commit이 false로 되어있어서 또함번 저장해야함!m2m으로
+        messages.success(self.request, "Room Uploaded")
+        return redirect(reverse("rooms:detail", kwargs={"pk": room.pk}))
 
     # city = request.GET.get("city", "Anywhere")
     # city = str.capitalize(city)
