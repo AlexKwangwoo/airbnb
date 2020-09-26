@@ -44,7 +44,7 @@ class Reservation(core_models.TimeStampedModel):
     room = models.ForeignKey(
         "rooms.Room", related_name="reservations", on_delete=models.CASCADE
     )
-    objects = managers.CustomReservationManager()
+    # objects = managers.CustomReservationManager()
 
     def __str__(self):
         return f"{self.room} - {self.check_in}"
@@ -60,12 +60,15 @@ class Reservation(core_models.TimeStampedModel):
 
     def is_finished(self):
         now = timezone.now().date()
-        return now > self.check_out
+        is_finished = now > self.check_out
+        if is_finished:
+            BookedDay.objects.filter(reservation=self).delete()
+        return is_finished  # 예약날짜가 끝날때마다 지워준다!
 
     is_finished.boolean = True
 
     def save(self, *args, **kwargs):
-        if True:
+        if self.pk is None:
             # 예약이 있는지 없는지 체크한다! None이면 우리가 생성하려는
             # 모델이 새로운 거라는 뜻이고
             # 그다음 우리는 start와 end date를 얻을 것이다!

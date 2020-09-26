@@ -1,4 +1,5 @@
 from django.db import models
+from . import managers
 
 # Create your models here.
 class TimeStampedModel(models.Model):
@@ -11,5 +12,7 @@ class TimeStampedModel(models.Model):
     updated = models.DateTimeField(auto_now=True)
     # 장고가 모델이 업데이트(저장) 될때마다 날짜를 기록해준다
 
+    objects = managers.CustomModelManager()
+    # timestempedModel 에서 오는 모든곳에서 쓸수있게 한다!
     class Meta:  # abstract 는 db로 가지 않는다!
         abstract = True

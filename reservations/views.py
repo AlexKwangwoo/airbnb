@@ -4,6 +4,7 @@ from django.views.generic import View
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
 from rooms import models as room_models
+from reviews import forms as review_forms
 from . import models
 
 
@@ -56,7 +57,32 @@ class ReservationDetailView(View):
             raise Http404()
         # 페이지를 요청하는 user는 guest나 host여야 한다!
         # 즉 호스트도 게스트도 아니라면 http404를 raise한다!
-
+        form = review_forms.CreateReviewForm()  # review의 폼을 받아와서 밑에 보내준다
         return render(
-            self.request, "reservations/detail.html", {"reservation": reservation}
+            self.request,
+            "reservations/detail.html",
+            {"reservation": reservation, "form": form},
         )
+
+
+def edit_reservation(request, pk, verb):
+    reservation = models.Reservation.objects.get_or_none(pk=pk)
+    # 여기 pk=pk 인자 값들은.. CustomReservationManager의 get or none의
+    # **kwargs 의 쿼리 인자로 받을수있따!
+    # managers 에 정의하고 model에 추가해서 쓸수있다!
+    # 이 reservation은 guest나 host한테만 보여질 것이다!
+    if not reservation or (
+        reservation.guest != request.user and reservation.room.host != request.user
+    ):
+        raise Http404()
+        # 페이지를 요청하는 user는 guest나 host여야 한다!
+        # 즉 호스트도 게스트도 아니라면 http404를 raise한다!
+    if verb == "confirm":
+        reservation.status = models.Reservation.STATUS_CONFIRMED
+    elif verb == "cancel":
+        reservation.status = models.Reservation.STATUS_CANCELED
+        print(models.BookedDay.objects.filter(reservation=reservation))
+        models.BookedDay.objects.filter(reservation=reservation).delete()
+    reservation.save()
+    messages.success(request, "Reservation Updated")
+    return redirect(reverse("reservations:detail", kwargs={"pk": reservation.pk}))

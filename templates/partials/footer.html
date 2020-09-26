@@ -1,4 +1,8 @@
-<footer class="container mx-auto text-center py-10 border-t font-medium text-gray-500">
-  Please don't copy us.<br>
-  &copy; 2020 Kwangwooo Alex, Inc. All rights reserved.
+{% load i18n %}
+
+<footer class="container mx-auto text-center py-10 border-t flex flex-col font-medium text-gray-500">
+  <span>
+    {% trans "Please don't copy us." %}
+  </span>
+  <span>&copy; 2020 Kwangwooo Alex, Inc. {% trans "All rights reserved" %}.</span>
 </footer>

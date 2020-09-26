@@ -27,6 +27,7 @@ urlpatterns = [
     # http://localhost:8000/rooms/34 저기서 path("rooms/" ==> 8000/rooms/ 가 된다
     path("users/", include("users.urls", namespace="users")),
     path("reservations/", include("reservations.urls", namespace="reservations")),
+    path("reviews/", include("reviews.urls", namespace="reviews")),
     path(
         "admin/",
         admin.site.urls,
