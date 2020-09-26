@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-25 22:01-0600\n"
+"POT-Creation-Date: 2020-09-26 01:12-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,12 +20,93 @@ msgstr ""
 
 #: .\templates\base.html:28
 msgid "Search By City"
-msgstr ""
+msgstr "Recherche par ville"
 
-#: .\templates\partials\footer.html:5
+#: .\templates\partials\footer.html:6
 msgid "Please don't copy us."
-msgstr ""
+msgstr "S'il vous plaît ne nous copiez pas."
 
-#: .\templates\partials\footer.html:7
+#: .\templates\partials\footer.html:8
 msgid "All rights reserved"
+msgstr "Tous droits réservés"
+
+#: .\templates\partials\nav.html:17
+msgid "Stop hosting"
+msgstr "Arrêter l'hébergement"
+
+#: .\templates\partials\nav.html:19
+msgid "Start hosting"
+msgstr "Début de l’hébergement"
+
+#: .\templates\partials\nav.html:25
+msgid "Create Room"
+msgstr "Créer une salle"
+
+#: .\templates\partials\nav.html:28
+msgid "Profile"
+msgstr "Profil"
+
+#: .\templates\partials\nav.html:29
+msgid "Log out"
+msgstr "Fermer la session"
+
+#: .\templates\partials\nav.html:33
+msgid "Log in"
+msgstr "Ouverture de session"
+
+#: .\templates\partials\nav.html:34
+msgid "Sign up"
+msgstr "Inscription"
+
+#: .\templates\rooms\room_list.html:45
+#, python-format
+msgid ""
+"Page %(current_page)s of\n"
+"      %(total_page)s"
 msgstr ""
+"Page %(current_page)s de\n"
+"      %(total_page)s"
+
+#: .\users\mixins.py:15
+msgid "Can't go there"
+msgstr "Ne peut pas y aller"
+
+#: .\users\models.py:26
+msgid "Male"
+msgstr "Hommes"
+
+#: .\users\models.py:27
+msgid "Female"
+msgstr "Femmes"
+
+#: .\users\models.py:28
+msgid "Other"
+msgstr "Autres"
+
+#: .\users\models.py:37
+msgid "English"
+msgstr "Français"
+
+#: .\users\models.py:38
+msgid "Korean"
+msgstr "Coréen"
+
+#: .\users\models.py:61
+msgid "gender"
+msgstr "sexe"
+
+#: .\users\models.py:65
+msgid "bio"
+msgstr "bio"
+
+#: .\users\models.py:66
+msgid "bio2"
+msgstr "bio2"
+
+#: .\users\models.py:73
+msgid "language"
+msgstr "langue"
+
+#: .\users\models.py:108
+msgid "Verify Kwangwoo_BNB Account"
+msgstr "Vérifier Kwangwoo_BNB Compte"

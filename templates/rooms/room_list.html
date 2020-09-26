@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static i18n%}
 
 <!-- 모두 같은 폴더잇다고 생각하고 경로 설정해야한다
 <../base 이렇게 (절대경로) 해주면 안된다!!
@@ -41,7 +41,10 @@ Home
     {% endif %}
 
     <!--Page {{page.number}} of {{page.paginator.num_pages}} 장고를 크게이용!! -->
-    <span class="mx-3 font-medium text-lg">{{page_obj.number}} of {{page_obj.paginator.num_pages}}</span>
+    <span class="mx-3 font-medium text-lg">
+      {% blocktrans with current_page=page_obj.number total_page=page_obj.paginator.num_pages%}Page {{current_page}} of
+      {{total_page}}{% endblocktrans %}
+    </span>
 
     {% if page_obj.has_next%}
     <!-- <a href="?page={{page.number|add:1}}">Next</a> if + has가 없었다면

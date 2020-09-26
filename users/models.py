@@ -1,4 +1,5 @@
 import uuid  # 번호 무작위 생성!! 8진수 가능(메일검증위해!)
+from django.utils.translation import gettext_lazy as _  # reverse lazy같은것임!
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -22,18 +23,19 @@ class User(AbstractUser):
     GENDER_OTHER = "other"
 
     GENDER_CHOICES = (
-        (GENDER_MALE, "Male"),
-        (GENDER_FMALE, "Female"),
-        (GENDER_OTHER, "Other"),
+        (GENDER_MALE, _("Male")),
+        (GENDER_FMALE, _("Female")),
+        (GENDER_OTHER, _("Other")),
         # GENDER_~~ 가 DB로 갈 값이고, Male이 form에 보여질 속성이다.
+        # 번역을 위한 _() 위에서 _로 정의하였음!
     )
 
     LANGUAGE_ENGLISH = "en"
     LANGUAGE_KOREAN = "kr"
 
     LANGUAGE_CHOICES = (
-        (LANGUAGE_ENGLISH, "English"),
-        (LANGUAGE_KOREAN, "Korean"),
+        (LANGUAGE_ENGLISH, _("English")),
+        (LANGUAGE_KOREAN, _("Korean")),
     )
 
     CURRENCY_USD = "usd"
@@ -55,18 +57,24 @@ class User(AbstractUser):
 
     avatar = models.ImageField(upload_to="avatars", null=True, blank=True)
     # blank ="true"는 form에서 빈공간을 빨간색표시하는데 저걸이용해 무시할수있다.
-    gender = models.CharField(choices=GENDER_CHOICES, max_length=10, blank=True)
+    gender = models.CharField(
+        _("gender"), choices=GENDER_CHOICES, max_length=10, blank=True
+    )
     # 비어도 괜찮다!.. choices는 내장된 속성!! 3개의 값을 가지게 한다!
 
-    bio = models.TextField(blank=True)
-    bio2 = models.TextField(blank=True)
+    bio = models.TextField(_("bio"), blank=True)
+    bio2 = models.TextField(_("bio2"), blank=True)
     # 여기에 뭘넣던 admin패널에 다생기게 된다. database에 넣을수있음
     # default값 은 무조껀 있어야 migrations 만든후 migrate 넘길수있다
     # 값을 뭐라도 넣어줘야 한다. 안그러면 db에 빈자리 처리가 안된다!
     # 또는 null=true 라고 적어줘서 빈칸 써도 된다고 해준다!!
     birthdate = models.DateField(blank=True, null=True)
     language = models.CharField(
-        choices=LANGUAGE_CHOICES, max_length=2, blank=True, default=LANGUAGE_KOREAN
+        _("language"),
+        choices=LANGUAGE_CHOICES,
+        max_length=2,
+        blank=True,
+        default=LANGUAGE_KOREAN,
     )
     currency = models.CharField(
         choices=CURRENCY_CHOICES, max_length=3, blank=True, default=CURRENCY_KRW
@@ -97,7 +105,7 @@ class User(AbstractUser):
                 # html은 html 로 따로 보내야한다는 점이다! 그래서
                 # 메시지를 html을 제외한 택스트 보내주는거 하나 strip_tags(html_message)
                 # 메시지를 html만 뽑은거 하나를 보내주는것이다!
-                "Verify Kwangwoo_BNB Account",
+                _("Verify Kwangwoo_BNB Account"),
                 strip_tags(html_message),  # html형태를 제외하고 return함
                 # f'To verify your account click <a href="http://localhost:8000/users/verify/{secret}">here</a>',
                 # string형태로 가서 href 가 안먹힐 것이다!

@@ -11,8 +11,8 @@ class List(core_models.TimeStampedModel):
     name = models.CharField(max_length=80)
 
     # 유저가 지워지면 리스트도 삭제됨
-    user = models.ForeignKey(
-        "users.User", related_name="lists", on_delete=models.CASCADE
+    user = models.OneToOneField(
+        "users.User", related_name="list", on_delete=models.CASCADE
     )
 
     # 리스트는 많은 방들을 가질 수 있다
