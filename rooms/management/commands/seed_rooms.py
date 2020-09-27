@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 room_models.Photo.objects.create(
                     caption=seeder.faker.sentence(),
                     room=room,  # 왼쪽룸은 photo의룸 오른쪽은 바로 위의 room이 될것이다!
-                    file=f"room_photos/{random.randint(1,31)}.webp",  # 문제생기면 9.4 다시보기
+                    file=f"room_photos/{random.randint(1,45)}.webp",  # 문제생기면 9.4 다시보기
                     # file="room_photos/31.jpg", 문제생기면 여기를 고치자!! 사진도 확장자 jpg로 바꿔야함!
                     # 다운로드하고 파일을 여는경우가 생긴다.. jpg는 괜찮음!
                 )

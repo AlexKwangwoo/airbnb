@@ -18,7 +18,7 @@ class Conversation(core_models.TimeStampedModel):
     def __str__(self):
         usernames = []
         for user in self.participants.all():
-            usernames.append(user.username)
+            usernames.append(user.first_name)
         return ", ".join(usernames)
         # str은 date 타입이아니라 str타입으로 받을수만 있다!
         # return의 join은 리스트의 내용을 빈칸 한칸 간격으로 모아준다!
@@ -34,6 +34,12 @@ class Conversation(core_models.TimeStampedModel):
         return self.participants.count()
         # 본인 conversation 클래스 에서 갯수를 가져온다
         # 위의participants 속성을 이용해서!
+
+    def show_user(self):
+        users = []
+        for user in self.participants.all():
+            users.append(user)
+        return users
 
     count_participants.short_description = "Number of Participants"
 
