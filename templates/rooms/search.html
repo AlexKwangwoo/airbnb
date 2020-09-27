@@ -9,16 +9,30 @@ Search
 
 {% block content %}
 
-<h2>Search!</h2>
+<h2 class="text-center text-3xl mb-10 mt-10">Search</h2>
 
-<form method="get" action="{% url "rooms:search" %}">
-  {{form.as_p}}
-  <!--as_p 안붙여 주면 테이블 형식이라 한줄띄우기 안됨!-->
+<div class="flex items-start">
+  <div class="w-1/3 m-auto flex flex-col items-center border mb-10 p-4">
+    <form method="get" action="{% url "rooms:search" %}">
+      {{form.as_p}}
+      <!--as_p 안붙여 주면 테이블 형식이라 한줄띄우기 안됨!-->
 
-  <button>Search</button>
+      <button class="btn-link mt-10">Search</button>
 
-</form>
-
+    </form>
+  </div>
+  <div class="w-1/2 m-auto flex flex-col mb-10 mt-0 items-center border p-4">
+    <h3 class="text-2xl mb-10">Results</h3>
+    <div class="container mx-auto pb-10 flex flex-col items-center">
+      <div class="flex flex-wrap w-full -mx-40 mb-10">
+        {% for room in rooms %}
+        {% include "mixins/room_card.html" with room=room %}
+        <!--for문의 room을 가져온다! 왼쪽룸이 저 include안으로 가고 오른쪽룸이 for문의 room이다-->
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
 {% comment %}
 <form method="get" action="{% url "rooms:search" %}">
   <div>
@@ -32,7 +46,8 @@ Search
     <label for="country">Country</label>
     <select id="country" name="country">
       {% for country in countries  %}
-      <option value="{{country.code}}" {% if country.code == s_country %}selected{% endif %}>{{country.name}}</option>
+      <option value="{{country.code}}" {% if country.code == s_country %}selected{% endif %}>{{country.name}}
+      </option>
       {% endfor %}
     </select>
   </div>
@@ -40,9 +55,11 @@ Search
   <div>
     <label for="room_type">Room Types</label>
     <select id="room_type" name="room_type">
-      <option value="0" {% if s_room_type == 0 %}selected{% endif %}>Any kind</option> <!-- 아무방 값을 0 주고 추가하였다! 다른건1~4-->
+      <option value="0" {% if s_room_type == 0 %}selected{% endif %}>Any kind</option>
+      <!-- 아무방 값을 0 주고 추가하였다! 다른건1~4-->
       {% for room_type in room_types  %}
-      <option value={{room_type.pk}} {% if s_room_type == room_type.pk %}selected{% endif %}>{{room_type.name}}</option>
+      <option value={{room_type.pk}} {% if s_room_type == room_type.pk %}selected{% endif %}>{{room_type.name}}
+      </option>
       {% endfor %}
     </select>
   </div>
@@ -126,10 +143,5 @@ Search
   <button>Search</button>
 </form> {% endcomment %}
 
-<h3>Results</h3>
-{% for room in rooms  %}
-<h3>{{room.name}}</h3>
-<!--앞에서 검색결과의 rooms를 풀어서 보여준다-->
-{% endfor %}
 
 {% endblock content %}

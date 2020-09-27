@@ -15,24 +15,17 @@ class SearchForm(forms.Form):
     bedrooms = forms.IntegerField(required=False)
     beds = forms.IntegerField(required=False)
     baths = forms.IntegerField(required=False)
-    instant_book = forms.BooleanField(required=False)
-    superhost = forms.BooleanField(required=False)
-
     amenities = forms.ModelMultipleChoiceField(
-        required=False,
-        queryset=models.Amenity.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        required=False, queryset=models.Amenity.objects.all()
     )
     facilities = forms.ModelMultipleChoiceField(
-        required=False,
-        queryset=models.Facility.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        required=False, queryset=models.Facility.objects.all()
     )
     house_rules = forms.ModelMultipleChoiceField(
-        required=False,
-        queryset=models.HouseRule.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        required=False, queryset=models.HouseRule.objects.all()
     )
+    instant_book = forms.BooleanField(required=False)
+    superhost = forms.BooleanField(required=False)
 
 
 class CreatePhotoForm(forms.ModelForm):

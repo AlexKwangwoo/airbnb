@@ -2,7 +2,8 @@ import datetime
 from django.db import models
 from core import models as core_models
 from django.utils import timezone
-from . import managers
+
+# from . import managers
 
 
 class BookedDay(core_models.TimeStampedModel):
