@@ -27,6 +27,20 @@ Reservation {{reservation.check_in}}
       {{reservation.room.name}}
     </span>
 
+    {% if reservation.room.host == user %}
+    <div class="flex p-5 border-b w-full">
+      <div class="flex flex-col items-center">
+        {% include "mixins/user_avatar.html" with user=reservation.guest %}
+        <span class="mt-2 text-gray-500">{{reservation.guest.first_name}}</span>
+        </a>
+      </div>
+      <div class="ml-5 flex flex-col">
+        <span class="font-medium mb-px">Contact this reservation's guest</span>
+        <a href="{% url 'conversations:go' reservation.room.host.pk reservation.guest.pk%}"
+          class="font-medium text-teal-500">Send a Message</a>
+      </div>
+    </div>
+    {% else %}
     <div class="flex p-5 border-b w-full">
       <div class="flex flex-col items-center">
         {% include "mixins/user_avatar.html" with user=reservation.room.host %}
@@ -35,10 +49,11 @@ Reservation {{reservation.check_in}}
       </div>
       <div class="ml-5 flex flex-col">
         <span class="font-medium mb-px">Contact your Airbnb Host</span>
-        <a href="{% url 'conversations:go' reservation.room.host.pk reservation.guest.pk %}"
+        <a href="{% url 'conversations:go' reservation.room.host.pk reservation.guest.pk%}"
           class="font-medium text-teal-500">Send a Message</a>
       </div>
     </div>
+    {% endif %}
 
     <div class="py-10 px-5">
       {% if reservation.status != 'cancel' %}
@@ -54,7 +69,7 @@ Reservation {{reservation.check_in}}
       {% if reservation.status == "pending" %}
       <a href="{% url 'reservations:edit' reservation.pk 'cancel' %}" class="btn-link block px-5">Cancel
         Reservation</a>
-      {% if reservation.room.host != user %}
+      {% if reservation.room.host == user %}
       <a href="{% url 'reservations:edit' reservation.pk 'confirm' %}" class="btn-link block px-3 mt-5 mb-3">Confirm
         Reservation</a>
       {% endif %}

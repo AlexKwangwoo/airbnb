@@ -9,6 +9,12 @@ class Conversation(core_models.TimeStampedModel):
         "users.User", related_name="conversations", blank=True
     )
 
+    # room = models.ForeignKey(
+    #     "rooms.Room",
+    #     related_name="conversations",
+    #     on_delete=models.CASCADE,
+    # )
+
     def __str__(self):
         usernames = []
         for user in self.participants.all():

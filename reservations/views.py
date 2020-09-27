@@ -3,6 +3,7 @@ from django.http import Http404
 from django.views.generic import View
 from django.contrib import messages
 from django.shortcuts import render, redirect, reverse
+from django.views.generic import TemplateView
 from rooms import models as room_models
 from reviews import forms as review_forms
 from . import models
@@ -16,6 +17,7 @@ class CreateError(Exception):
 
 
 def create(request, room, year, month, day):
+    print(room)
     try:
         date_obj = datetime.datetime(year, month, day)
         room = room_models.Room.objects.get(pk=room)
@@ -28,6 +30,7 @@ def create(request, room, year, month, day):
         return redirect(reverse("core:home"))
     except models.BookedDay.DoesNotExist:
         # 예약된게 없다면!!!
+        print("예약된게 없다면!!")
         reservation = models.Reservation.objects.create(
             guest=request.user,
             room=room,
@@ -86,3 +89,11 @@ def edit_reservation(request, pk, verb):
     reservation.save()
     messages.success(request, "Reservation Updated")
     return redirect(reverse("reservations:detail", kwargs={"pk": reservation.pk}))
+
+
+class ReservationListView(TemplateView):
+    template_name = "reservations/reservationList_detail.html"
+
+
+class ReservationListHostView(TemplateView):
+    template_name = "reservations/reservationListHost_detail.html"

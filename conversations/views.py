@@ -3,12 +3,15 @@ from django.http import Http404
 from django.shortcuts import redirect, reverse, render
 from django.views.generic import View
 from users import models as user_models
+from rooms import models as room_models
 from . import models, forms
 
 # Create your views here.
 def go_conversation(request, a_pk, b_pk):
     user_one = user_models.User.objects.get(pk=a_pk)
     user_two = user_models.User.objects.get(pk=b_pk)
+    # room_ = room_models.Room.objects.get(pk=c_pk)
+
     if user_one is not None and user_two is not None:
         # conversation = models.Conversation.objects.filter(participants=user_one).filter(
         #     participants=user_two
@@ -21,6 +24,8 @@ def go_conversation(request, a_pk, b_pk):
         except models.Conversation.DoesNotExist:
             conversation = models.Conversation.objects.create()
             conversation.participants.add(user_one, user_two)
+            # print(room_)
+            # conversation.room.add(room_)
         return redirect(reverse("conversations:detail", kwargs={"pk": conversation.pk}))
 
 

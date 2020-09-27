@@ -19,6 +19,9 @@ def is_booked(room, day):
         # 그다음.. bookedday가 있는지 없는지 체크하는데 조건은 day는 위의 date이고!
         # 그다음 조건에는 relation을 이용해서 reservation의 room을 가지고 와서 __room=room해줌!
         # =room 의 room은 템플릿에서 받은거!
+        # print(
+        #     reservation_models.BookedDay.objects.get(day=date, reservation__room=room)
+        # )
         reservation_models.BookedDay.objects.get(day=date, reservation__room=room)
         # 만약에 우리가 bookedDay를 찾았으면 True를 리턴하고!
         return True
