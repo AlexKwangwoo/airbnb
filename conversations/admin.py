@@ -19,5 +19,4 @@ class ConversationAdmin(admin.ModelAdmin):
         "__str__",
         "count_messages",
         "count_participants",
-        # "room",
     )

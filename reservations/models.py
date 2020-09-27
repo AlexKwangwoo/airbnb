@@ -37,6 +37,7 @@ class Reservation(core_models.TimeStampedModel):
     )
 
     # 유저랑 룸이 삭제되면 예약도 삭제될것이다!!
+
     check_in = models.DateField()
     check_out = models.DateField()
     guest = models.ForeignKey(

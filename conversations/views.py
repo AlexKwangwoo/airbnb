@@ -2,8 +2,9 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import redirect, reverse, render
 from django.views.generic import View
+from django.views.generic import TemplateView
 from users import models as user_models
-from rooms import models as room_models
+from reservations import models as reservation_models
 from . import models, forms
 
 # Create your views here.
@@ -24,8 +25,6 @@ def go_conversation(request, a_pk, b_pk):
         except models.Conversation.DoesNotExist:
             conversation = models.Conversation.objects.create()
             conversation.participants.add(user_one, user_two)
-            # print(room_)
-            # conversation.room.add(room_)
         return redirect(reverse("conversations:detail", kwargs={"pk": conversation.pk}))
 
 
@@ -62,3 +61,7 @@ class ConversationDetailView(View):
                 message=message, user=self.request.user, conversation=conversation
             )
         return redirect(reverse("conversations:detail", kwargs={"pk": pk}))
+
+
+class ConversationView(TemplateView):
+    template_name = "conversations/conversation.html"

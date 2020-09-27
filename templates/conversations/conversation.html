@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+{{user_obj.first_name}}'s messages
+{% endblock page_title %}
+
+
+{% block content %}
+<div class="h-75vh">
+
+  <h3 class="mb-12 text-2xl text-center font-bold pt-10">Your message list</h3>
+
+  <div class="container m-auto border p-10">
+    {% for conversation in user.conversations.all %}
+    <div class="m-auto">
+      <a class="text-center" href="{% url "conversations:detail" conversation.pk %}">
+        <h3 class="text-xl text-center mb-10">Participants : {{conversation}}<h3>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!--for문의 room을 가져온다! 왼쪽룸이 저 include안으로 가고 오른쪽룸이 for문의 room이다-->
+
+
+</div>
+
+{% endblock content %}

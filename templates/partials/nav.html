@@ -28,6 +28,7 @@
   <li class="nav_link"><a href="{% url 'reservations:reservation-list' %}">{% trans "Reservation(guest)" %}</a></li>
   <!--reservations:reservation-list 의미는.. 앞에는 confing시작주소 뒤에는 reservation url-name이다! -->
   <li class="nav_link"><a href="{% url 'lists:see-favs' %}">{% trans "Favs" %}({{user.list.rooms.count}})</a></li>
+  <li class="nav_link"><a href="{% url 'conversations:conversation' %}">{% trans "Msg" %}</a></li>
   <li class="nav_link"><a href="{{user.get_absolute_url}}">{% trans "Profile" %}</a></li>
   <li class="nav_link"><a href="{% url "users:logout" %}">{% trans "Log out" %}</a></li>
 
