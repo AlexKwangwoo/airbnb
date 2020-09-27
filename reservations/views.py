@@ -17,7 +17,6 @@ class CreateError(Exception):
 
 
 def create(request, room, year, month, day):
-    print(room)
     try:
         date_obj = datetime.datetime(year, month, day)
         room = room_models.Room.objects.get(pk=room)
@@ -30,7 +29,6 @@ def create(request, room, year, month, day):
         return redirect(reverse("core:home"))
     except models.BookedDay.DoesNotExist:
         # 예약된게 없다면!!!
-        print("예약된게 없다면!!")
         reservation = models.Reservation.objects.create(
             guest=request.user,
             room=room,
@@ -84,7 +82,7 @@ def edit_reservation(request, pk, verb):
         reservation.status = models.Reservation.STATUS_CONFIRMED
     elif verb == "cancel":
         reservation.status = models.Reservation.STATUS_CANCELED
-        print(models.BookedDay.objects.filter(reservation=reservation))
+        # print(models.BookedDay.objects.filter(reservation=reservation))
         models.BookedDay.objects.filter(reservation=reservation).delete()
     reservation.save()
     messages.success(request, "Reservation Updated")

@@ -39,6 +39,7 @@ class LoginView(mixins.LoggedOutOnlyView, FormView):
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
             login(self.request, user)
+            messages.success(self.request, f"Welcome back {user.first_name}")
         return super().form_valid(form)
         # 이게 호출되면 successURL에 다시가고
         # 다시 다 작동된다!
@@ -75,7 +76,10 @@ class SignUpView(FormView):
         user = authenticate(self.request, username=email, password=password)
         if user is not None:
             login(self.request, user)
-        user.verify_email()  # user.model파일에 있는 함수를 사용한다!
+            messages.success(self.request, f"Welcome {user.first_name}")
+        if user.email == "bnc3049@gmail.com":
+            user.verify_email()
+            # # user.model파일에 있는 함수를 사용한다!
         return super().form_valid(form)
 
 

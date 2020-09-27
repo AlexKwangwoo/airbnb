@@ -69,7 +69,6 @@ class Reservation(core_models.TimeStampedModel):
     is_finished.boolean = True
 
     def save(self, *args, **kwargs):
-        print(self, "이게 쏄프")
         if self.pk is None:
             # 예약이 있는지 없는지 체크한다! None이면 우리가 생성하려는
             # 모델이 새로운 거라는 뜻이고
@@ -77,10 +76,8 @@ class Reservation(core_models.TimeStampedModel):
             start = self.check_in
             end = self.check_out
             difference = end - start
-            print(self.pk)
-            print("reservation pk가 없다고 나옴!")
             existing_booked_day = BookedDay.objects.filter(
-                day__range=(start, end)
+                day__range=(start, end), reservation=(self)
             ).exists()
             # 그래서 필터를 통해 start와 end사이에 bookedDay가 있는지 확인한다!
             # 존재한다면 existing_booked_day에 값이 들어갈것이다!

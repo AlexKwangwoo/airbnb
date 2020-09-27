@@ -15,7 +15,7 @@ def create_review(request, room):
             review = form.save()
             review.room = room
             review.user = request.user
-            print(review)
+            # print(review)
             review.save()
             messages.success(request, "Room reviewed")
             return redirect(reverse("rooms:detail", kwargs={"pk": room.pk}))
