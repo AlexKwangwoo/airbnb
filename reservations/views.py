@@ -36,6 +36,10 @@ def create(request, room, year, month, day):
             check_out=date_obj + datetime.timedelta(days=1),
             # check_out은 하루 다음날.. 장고는 2일연속 못한다!
         )
+        messages.success(
+            request,
+            f"Your reservation {date_obj}-{date_obj + datetime.timedelta(days=1)} has been saved successfully!",
+        )
         return redirect(reverse("reservations:detail", kwargs={"pk": reservation.pk}))
 
 

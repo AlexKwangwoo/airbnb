@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-26 01:12-0600\n"
+"POT-Creation-Date: 2020-09-28 17:16-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,21 +42,45 @@ msgstr "Début de l’hébergement"
 msgid "Create Room"
 msgstr "Créer une salle"
 
+#: .\templates\partials\nav.html:26
+msgid "Reservation(host)"
+msgstr "Réserve(hôte)"
+
 #: .\templates\partials\nav.html:28
+msgid "Reservation(guest)"
+msgstr "Réserve(invité)"
+
+#: .\templates\partials\nav.html:30
+msgid "Favs"
+msgstr "Favoris"
+
+#: .\templates\partials\nav.html:31
+msgid "Msg"
+msgstr "Msg"
+
+#: .\templates\partials\nav.html:32
 msgid "Profile"
 msgstr "Profil"
 
-#: .\templates\partials\nav.html:29
+#: .\templates\partials\nav.html:33
 msgid "Log out"
 msgstr "Fermer la session"
 
-#: .\templates\partials\nav.html:33
+#: .\templates\partials\nav.html:37
 msgid "Log in"
 msgstr "Ouverture de session"
 
-#: .\templates\partials\nav.html:34
+#: .\templates\partials\nav.html:38
 msgid "Sign up"
 msgstr "Inscription"
+
+#: .\templates\rooms\room_detail.html:38
+msgid "Remove from Favourites"
+msgstr "Retirer des Favoris"
+
+#: .\templates\rooms\room_detail.html:42
+msgid "Save to Favourites"
+msgstr "Save to Favourites"
 
 #: .\templates\rooms\room_list.html:45
 #, python-format
