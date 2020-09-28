@@ -19,6 +19,11 @@ urlpatterns = [
         views.EditPhotoView.as_view(),
         name="edit-photo",
     ),
+    path(
+        "<int:room_pk>/edit/delete/",
+        views.delete_room,
+        name="delete-room",
+    ),
     path("search/", views.SearchView.as_view(), name="search"),
 ]
 # 룸의 view가 def에서 class로 바뀌면서.. HomeView class처럼 바뀐다!

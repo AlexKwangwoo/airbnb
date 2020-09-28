@@ -230,6 +230,22 @@ def delete_photo(request, room_pk, photo_pk):
         return redirect(reverse("core:home"))
 
 
+@login_required
+def delete_room(request, room_pk):
+    user = request.user
+    try:
+        room = models.Room.objects.get(pk=room_pk)
+        if room.host.pk != user.pk:
+            messages.error(request, "Can't delete that photo")
+        else:
+            room.delete()
+            # 필터된 모든 사진을 삭제 한다! 근데 pk써서 pk에 맞는건 하나라 하나 삭제됨
+            messages.success(request, "Room Deleted")
+        return redirect(reverse("core:home"))
+    except models.Room.DoesNotExist:
+        return redirect(reverse("core:home"))
+
+
 class EditPhotoView(user_mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
     # SuccessMessageMixin등 상속 위치가 바뀌면 메시지가 안뜬다!!
     model = models.Photo

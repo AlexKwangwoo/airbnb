@@ -13,10 +13,10 @@ Home
 {% block content %}
 
 <div class="container mx-auto pb-10">
-  <div class="rounded-xl -mx-40 bg-gray-800 h-50vh mt-32 mb-24 bg-cover bg-center"
-    style="background-image:url({% static 'img/bg2.jpg' %})">
+  <div class="hover:shadow-2xl rounded-xl -mx-40 bg-gray-800 h-50vh mt-32 mb-24 bg-cover bg-center"
+    style="background-image:url({% static 'img/bg4.jpg' %})">
   </div>
-
+  <!-- transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-90 -->
   <!--view파일에서 ListView 상속된... 이친구가 
   object list를 반환 바로해줌! 이름 바꾸고싶었음 !! 
   view에서 context_object_name = " rooms" 를통해 \{% for room in object_list %\}를 바꿈-->

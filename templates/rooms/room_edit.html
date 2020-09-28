@@ -16,7 +16,9 @@ Update Room
   <div class="mt-5">
     <a href="{% url 'rooms:photos' room.pk %}" class="text-teal-500 font-medium">Edit Photos</a>
   </div>
-
+  <div class="mt-5">
+    <a href="{% url 'rooms:delete-room' room.pk %}" class="text-teal-500 font-medium">Delete room</a>
+  </div>
 
 </div>
 {% endblock content %}
