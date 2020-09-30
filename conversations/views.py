@@ -3,6 +3,9 @@ from django.http import Http404
 from django.shortcuts import redirect, reverse, render
 from django.views.generic import View
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from users import models as user_models
 from reservations import models as reservation_models
 from . import models, forms
@@ -65,3 +68,19 @@ class ConversationDetailView(View):
 
 class ConversationView(TemplateView):
     template_name = "conversations/conversation.html"
+
+
+@login_required
+def deleteConversation(request, conversation_pk):
+    user = request.user
+    try:
+        conversation = models.Conversation.objects.get(pk=conversation_pk)
+        if not conversation.pk:
+            messages.error(request, "Can't delete that message")
+        else:
+            conversation.delete()
+            # 필터된 모든 사진을 삭제 한다! 근데 pk써서 pk에 맞는건 하나라 하나 삭제됨
+            messages.success(request, "Message Deleted")
+        return redirect(reverse("conversations:conversation"))
+    except models.Conversation.DoesNotExist:
+        return redirect(reverse("conversations:conversation"))

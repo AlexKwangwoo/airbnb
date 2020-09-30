@@ -8,4 +8,5 @@ urlpatterns = [
     path("go/<int:a_pk>/<int:b_pk>/", views.go_conversation, name="go"),
     path("<int:pk>/", views.ConversationDetailView.as_view(), name="detail"),
     path("con/", views.ConversationView.as_view(), name="conversation"),
+    path("con/<int:conversation_pk>/delete/", views.deleteConversation, name="delete"),
 ]
