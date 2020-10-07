@@ -56,15 +56,17 @@ Reservation {{reservation.check_in}}
     {% endif %}
 
     <div class="py-10 px-5">
-      {% if reservation.status != 'cancel' %}
+      {% if reservation.status != 'canceled' %}
 
       {% if reservation.status == 'confirmed' and reservation.is_finished and reservation.room.host != user%}
       <span class="font-medium text-2xl text-center w-fill block mb-5">Write your review</span>
       <form action="{% url 'reviews:create' reservation.room.pk %}" method="POST" class="w-1/2 mx-auto">
         {% csrf_token %}
         {{form}}
-        <button class="btn-link mt-5">Submit Review</button>
+        <button class="btn-link mt-5 bg-teal-500">Submit Review</button>
       </form>
+      <a href="{% url 'reservations:delete' reservation.pk %}" class="btn-link block px-3 mt-5 mb-3 w-1/5 m-auto">Delete
+        Reservation</a>
 
       {% else %}
 
@@ -80,6 +82,9 @@ Reservation {{reservation.check_in}}
 
       {% endif %}
 
+      {% else %}
+      <a href="{% url 'reservations:delete' reservation.pk  %}" class="btn-link block px-3 mt-5 mb-3">Delete
+        Reservation</a>
       {% endif %}
     </div>
 

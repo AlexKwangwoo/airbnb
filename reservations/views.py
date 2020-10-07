@@ -1,4 +1,5 @@
 import datetime
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.views.generic import View
 from django.contrib import messages
@@ -91,6 +92,22 @@ def edit_reservation(request, pk, verb):
     reservation.save()
     messages.success(request, "Reservation Updated")
     return redirect(reverse("reservations:detail", kwargs={"pk": reservation.pk}))
+
+
+def delete_reservation(request, pk):
+    user = request.user
+    try:
+        reservation = models.Reservation.objects.get(pk=pk)
+        print(reservation)
+        if user:
+            reservation.delete()
+            # 필터된 모든 사진을 삭제 한다! 근데 pk써서 pk에 맞는건 하나라 하나 삭제됨
+            messages.success(request, "Reservation Deleted")
+        else:
+            messages.error(request, "Can't delete that Reservation")
+        return redirect(reverse("reservations:reservation-list"))
+    except models.Reservation.DoesNotExist:
+        return redirect(reverse("reservations:reservation-list"))
 
 
 class ReservationListView(TemplateView):
