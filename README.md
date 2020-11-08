@@ -1,6 +1,6 @@
-# Airbnb
+# Kwangbnb
 
-Making Airbnb
+Making Kwangbnb
 
 1. pipenv shell
 2. python manage.py runserver
